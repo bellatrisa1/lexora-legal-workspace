@@ -1,0 +1,36 @@
+{
+  "common": {
+    "cancel": "Cancelar",
+    "retry": "Volver a intentar",
+    "open": "Abrir",
+    "unassigned": "Sin asignar",
+    "language": "Idioma",
+    "languageError": "No se pudo cambiar el idioma. Inténtalo de nuevo.",
+    "loading": "Cargando solicitudes"
+  },
+  "validation": {
+    "titleMin": "Introduce al menos 5 caracteres",
+    "titleMax": "Máximo 120 caracteres",
+    "descriptionMin": "Describe la tarea con al menos 20 caracteres",
+    "descriptionMax": "Máximo 4000 caracteres",
+    "dateRequired": "Indica una fecha",
+    "dateInvalid": "Indica una fecha válida",
+    "datePast": "La fecha no puede estar en el pasado",
+    "commentRequired": "Escribe un comentario",
+    "commentMax": "Máximo 2000 caracteres",
+    "invalid": "Comprueba este campo"
+  },
+  "errors": {
+    "load": "No se pudieron cargar los datos",
+    "unavailable": "No se pudo conectar al servicio de demostración. Inténtalo de nuevo.",
+    "notFound": "La solicitud no existe o no está disponible para este rol.",
+    "forbidden": "Solo el personal puede cambiar el estado en la demo.",
+    "invalidStatus": "Estado desconocido",
+    "invalidInput": "Comprueba los campos e inténtalo de nuevo.",
+    "unknown": "Se ha producido un error. Inténtalo de nuevo.",
+    "page": "No se pudo abrir la página",
+    "pageText": "Intenta cargar la página de nuevo.",
+    "missingPage": "Página no encontrada",
+    "missingPageText": "Comprueba la dirección o vuelve a la lista de solicitudes."
+  }
+}

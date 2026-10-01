@@ -1,0 +1,36 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "retry": "Try again",
+    "open": "Open",
+    "unassigned": "Unassigned",
+    "language": "Language",
+    "languageError": "Could not change the language. Try again.",
+    "loading": "Loading workspace"
+  },
+  "validation": {
+    "titleMin": "Enter at least 5 characters",
+    "titleMax": "Use no more than 120 characters",
+    "descriptionMin": "Describe the task in at least 20 characters",
+    "descriptionMax": "Use no more than 4,000 characters",
+    "dateRequired": "Enter a date",
+    "dateInvalid": "Enter a valid calendar date",
+    "datePast": "The date cannot be in the past",
+    "commentRequired": "Enter a message",
+    "commentMax": "Use no more than 2,000 characters",
+    "invalid": "Check this field"
+  },
+  "errors": {
+    "load": "Could not load the data",
+    "unavailable": "The demo service could not be reached. Please try again.",
+    "notFound": "This matter could not be found in your workspace.",
+    "forbidden": "This action is not available in the current demo role.",
+    "invalidStatus": "Unknown status",
+    "invalidInput": "Check the submitted fields and try again.",
+    "unknown": "Something went wrong. Please try again.",
+    "page": "Could not open the page",
+    "pageText": "Try loading the page again.",
+    "missingPage": "Page not found",
+    "missingPageText": "Check the address or return to your workspace."
+  }
+}

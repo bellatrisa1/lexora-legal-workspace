@@ -1,0 +1,36 @@
+{
+  "common": {
+    "cancel": "Annulla",
+    "retry": "Riprova",
+    "open": "Apri",
+    "unassigned": "Non assegnato",
+    "language": "Lingua",
+    "languageError": "Impossibile cambiare lingua. Riprova.",
+    "loading": "Caricamento delle richieste"
+  },
+  "validation": {
+    "titleMin": "Inserisci almeno 5 caratteri",
+    "titleMax": "Massimo 120 caratteri",
+    "descriptionMin": "Descrivi l’attività con almeno 20 caratteri",
+    "descriptionMax": "Massimo 4000 caratteri",
+    "dateRequired": "Indica una data",
+    "dateInvalid": "Indica una data valida",
+    "datePast": "La data non può essere nel passato",
+    "commentRequired": "Inserisci un commento",
+    "commentMax": "Massimo 2000 caratteri",
+    "invalid": "Controlla questo campo"
+  },
+  "errors": {
+    "load": "Impossibile caricare i dati",
+    "unavailable": "Impossibile connettersi al servizio dimostrativo. Riprova.",
+    "notFound": "Richiesta non trovata o non disponibile per questo ruolo.",
+    "forbidden": "Solo un collaboratore può modificare lo stato nella demo.",
+    "invalidStatus": "Stato sconosciuto",
+    "invalidInput": "Controlla i campi e riprova.",
+    "unknown": "Si è verificato un errore. Riprova.",
+    "page": "Impossibile aprire la pagina",
+    "pageText": "Prova a ricaricare la pagina.",
+    "missingPage": "Pagina non trovata",
+    "missingPageText": "Controlla l’indirizzo o torna all’elenco richieste."
+  }
+}

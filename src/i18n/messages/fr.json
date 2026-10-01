@@ -1,0 +1,36 @@
+{
+  "common": {
+    "cancel": "Annuler",
+    "retry": "Réessayer",
+    "open": "Ouvrir",
+    "unassigned": "Non attribué",
+    "language": "Langue",
+    "languageError": "Impossible de changer la langue. Réessayez.",
+    "loading": "Chargement des demandes"
+  },
+  "validation": {
+    "titleMin": "Saisissez au moins 5 caractères",
+    "titleMax": "120 caractères maximum",
+    "descriptionMin": "Décrivez la tâche en au moins 20 caractères",
+    "descriptionMax": "4 000 caractères maximum",
+    "dateRequired": "Indiquez une date",
+    "dateInvalid": "Indiquez une date valide",
+    "datePast": "La date ne peut pas être dans le passé",
+    "commentRequired": "Saisissez un commentaire",
+    "commentMax": "2 000 caractères maximum",
+    "invalid": "Vérifiez ce champ"
+  },
+  "errors": {
+    "load": "Impossible de charger les données",
+    "unavailable": "Connexion au service de démonstration impossible. Réessayez.",
+    "notFound": "La demande est introuvable ou inaccessible pour ce rôle.",
+    "forbidden": "Seul un collaborateur peut modifier le statut en mode démo.",
+    "invalidStatus": "Statut inconnu",
+    "invalidInput": "Vérifiez les champs et réessayez.",
+    "unknown": "Une erreur est survenue. Réessayez.",
+    "page": "Impossible d’ouvrir la page",
+    "pageText": "Essayez de recharger la page.",
+    "missingPage": "Page introuvable",
+    "missingPageText": "Vérifiez l’adresse ou revenez à la liste des demandes."
+  }
+}
