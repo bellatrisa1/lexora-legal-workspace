@@ -1,110 +1,281 @@
-# Lexora — Global Legal Workspace
+<div align="center">
 
-Lexora is a portfolio frontend for international legal teams and their clients. Its central entity is a **Matter**: a legal engagement connecting a client, jurisdiction, team, documents, tasks, messages and activity.
+# LEXORA
 
-This is an interactive frontend prototype, not a production legal service. All people, organizations and records are fictional. There is no backend, authentication, database, file storage, realtime service or AI integration.
+### Global Legal Workspace
 
-## Run locally
+**Единое рабочее пространство для юридических команд и их клиентов**
 
-Use Node.js 22 LTS and npm.
+Юридические дела · Клиенты · Документы · Задачи · Коммуникация
 
-```sh
+[О проекте](#о-проекте) · [Стек](#технологический-стек) · [Запуск](#быстрый-старт) · [Архитектура](#архитектура) · [Планы](#планы-развития)
+
+</div>
+
+---
+
+## О проекте
+
+**Lexora** — портфолио-проект международной legal tech платформы для юридических фирм, внутренних юридических отделов, независимых юристов и их клиентов.
+
+В центре приложения находится **Matter** — юридическое дело или поручение: сопровождение сделки, проверка договора, регистрация интеллектуальной собственности или другая юридическая работа. Оно объединяет клиента, юрисдикцию, ответственную команду, документы, задачи, сообщения и историю действий.
+
+Проект демонстрирует разработку связного frontend-продукта: от публичной главной страницы до рабочих сценариев с валидацией, асинхронными запросами, обработкой ошибок и адаптивной навигацией.
+
+> **Текущий этап — frontend-прототип с mock API.** Все организации, люди и записи вымышлены. Настоящий backend, база данных, авторизация и файловое хранилище пока не подключены.
+
+## Технологический стек
+
+Версии ниже указаны по диапазонам зависимостей в `package.json`. Конкретные версии для воспроизводимой установки зафиксированы в `package-lock.json`.
+
+### Интерфейс и данные
+
+| Технология                  | Версия / подход                   | Применение                                                                   |
+| --------------------------- | --------------------------------- | ---------------------------------------------------------------------------- |
+| **Next.js**                 | `^16.3.6`, App Router             | Маршрутизация, layouts, серверные и клиентские компоненты, сборка приложения |
+| **React / React DOM**       | `^19.3.0`                         | Компоненты, хуки, интерактивность и отображение интерфейса                   |
+| **TypeScript**              | `^6.0.3`                          | Типизация моделей, API, компонентов и форм                                   |
+| **SCSS Modules**            | Локальные стили компонентов       | Изолированные стили, адаптивные сетки и общие UI-примитивы                   |
+| **Sass**                    | `^1.105.0`                        | Компиляция SCSS                                                              |
+| **CSS**                     | Глобальные стили и CSS-переменные | Токены оформления, типографика, базовые состояния и доступность              |
+| **TanStack Query**          | `^5.103.2`                        | Асинхронное получение данных, кеширование, мутации и обновление кеша         |
+| **Zod**                     | `^4.6.5`                          | Проверка полей форм и входных данных mock API                                |
+| **Lucide React**            | `^1.48.0`                         | Иконки интерфейса                                                            |
+| **React Context**           | В составе React                   | Демонстрационная личность пользователя и настройки часового пояса            |
+| **Intl API**                | Встроенный API JavaScript         | Форматирование дат, времени, чисел и валют                                   |
+| **Типизированный mock API** | Собственная реализация            | Асинхронные операции с демонстрационными данными в памяти                    |
+
+### Инструменты разработки и проверки
+
+| Инструмент                  | Версия / настройка                                | Применение                                                                      |
+| --------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------- |
+| **Node.js**                 | Для локального запуска — Node.js 22               | Среда выполнения инструментов и Next.js; отдельного backend на Node.js пока нет |
+| **npm**                     | `npm ci`, scripts, lockfile                       | Установка зависимостей и запуск команд проекта                                  |
+| **ESLint**                  | `^9.39.5`                                         | Статический анализ кода                                                         |
+| **eslint-config-next**      | `^16.3.6`                                         | Правила Next.js и React                                                         |
+| **Prettier**                | `^3.9.9`                                          | Единое форматирование кода и документации                                       |
+| **Vitest**                  | `^5.0.1`                                          | Unit-тесты моделей, mock API и форматтеров                                      |
+| **Playwright**              | `^1.63.0`                                         | Браузерные сценарии на desktop и mobile в Chromium                              |
+| **Webpack**                 | Через `next build --webpack`                      | Production-сборка                                                               |
+| **TypeScript declarations** | `@types/node`, `@types/react`, `@types/react-dom` | Типы среды Node.js и React                                                      |
+| **VS Code**                 | Настройки в `.vscode/`                            | Конфигурация форматирования и рекомендации расширений                           |
+
+Интерфейс построен на собственных компонентах. Tailwind, готовый UI-фреймворк, Redux и Zustand не используются.
+
+## Что реализовано
+
+| Раздел                | Возможности                                                                                        |
+| --------------------- | -------------------------------------------------------------------------------------------------- |
+| **Публичная главная** | Логотип Lexora, позиционирование, описание платформы, блок о продукте и переход в демо             |
+| **Overview**          | Активные дела, ожидание проверки, ближайшие сроки, действия клиента, задачи и последняя активность |
+| **Matters**           | Поиск, сортировка, фильтры по статусу, практике, юрисдикции и ответственному юристу                |
+| **Создание дела**     | Форма с проверкой полей, выбором клиента, юрисдикции, приоритета и целевой даты                    |
+| **Карточка дела**     | Описание, команда, метаданные и вкладки Overview, Documents, Tasks, Messages, Activity             |
+| **Clients**           | Поиск клиентов, профили организаций и физических лиц, контакты и связанные дела                    |
+| **Documents**         | Поиск, статусы, версии, авторы, даты и скачивание явно обозначенных демофайлов                     |
+| **Tasks**             | Исполнители, приоритеты, сроки, фильтрация и изменение статуса задачи                              |
+| **Messages**          | Переписка по делам с различением клиента и юридической команды                                     |
+| **Activity**          | Структурированная история событий с автором, временем и контекстом изменения                       |
+| **Calendar**          | Повестка сроков по делам и задачам с выбором периода                                               |
+| **Analytics**         | Сводки по доступным данным: статусы, практики, юрисдикции и распределение дел                      |
+| **Legal Team**        | Состав юридической команды и связанная рабочая информация                                          |
+| **Settings**          | Переключение демонстрационной роли и выбор часового пояса                                          |
+| **Help**              | Инструкции, демосценарии, симуляция ошибки API и сброс данных                                      |
+| **Глобальный поиск**  | Поиск по делам, клиентам и документам                                                              |
+
+### Интерфейс и доступность
+
+- Адаптивная оболочка для компьютеров, планшетов и телефонов.
+- Боковое меню на desktop и мобильная навигация в диалоге.
+- Адаптация таблиц в карточное представление на узких экранах.
+- Общие стили кнопок, полей, карточек, таблиц и индикаторов статуса.
+- Состояния загрузки, ошибки, отсутствия результатов и успешного действия.
+- Семантическая разметка, подписи полей и видимый фокус.
+- Управление вкладками с клавиатуры и нативные диалоги.
+
+## Быстрый старт
+
+Для работы нужны **Node.js 22** и **npm**. База данных и ключи внешних сервисов для демоверсии не требуются.
+
+```bash
+# Установить зависимости из lockfile
 npm ci
+
+# Запустить режим разработки
 npm run dev
 ```
 
-Open http://localhost:3000 for the public product website, or `/overview` for the workspace. Production preview:
+Откройте [http://localhost:3000](http://localhost:3000).
 
-```sh
+| Адрес                        | Страница                    |
+| ---------------------------- | --------------------------- |
+| `/`                          | Публичная главная Lexora    |
+| `/overview`                  | Обзор рабочего пространства |
+| `/matters`                   | Список дел                  |
+| `/matters/new`               | Создание дела               |
+| `/matters/[id]`              | Карточка дела               |
+| `/clients` и `/clients/[id]` | Клиенты и профиль клиента   |
+| `/documents`                 | Документы                   |
+| `/tasks`                     | Задачи                      |
+| `/messages`                  | Разговоры по делам          |
+| `/calendar`                  | Сроки                       |
+| `/analytics`                 | Аналитика                   |
+| `/team`                      | Команда                     |
+| `/settings`                  | Настройки                   |
+| `/help`                      | Помощь и демосценарии       |
+| `/search`                    | Глобальный поиск            |
+
+Старые маршруты `/requests` перенаправляют на соответствующие страницы `/matters`.
+
+### Локальная production-сборка
+
+```bash
 npm run build
 npm run start
 ```
 
-## Product experience
+Эти команды собирают и запускают приложение локально; они не выполняют deployment.
 
-- Public homepage with the Lexora wordmark, product positioning, platform overview and an entry into the demo.
-- Overview with active matters, review queues, upcoming deadlines, tasks and recent activity.
-- Matters with search, status/practice/jurisdiction/counsel filters and sorting.
-- Validated matter creation and details with Overview, Documents, Tasks, Messages and Activity tabs.
-- Client profiles, document metadata and explicitly labeled browser-generated demo downloads.
-- Task status updates, matter conversations, deadline agenda, factual workspace analytics and legal team directory.
-- Global search, timezone preferences, demo identities, error simulation and reset controls.
-- Responsive navigation and mobile table cards; native dialogs and keyboard-operable tabs.
-
-Workspace routes: `/overview`, `/matters`, `/matters/new`, `/matters/[id]`, `/clients`, `/clients/[id]`, `/documents`, `/tasks`, `/messages`, `/calendar`, `/analytics`, `/team`, `/settings`, `/help`, `/search`.
-
-Old `/requests` routes redirect to their `/matters` equivalents. The public homepage is `/`.
-
-## Architecture
-
-Next.js App Router, React, TypeScript, SCSS Modules, TanStack Query, Zod and Lucide icons. No new state manager, UI framework or Tailwind was introduced.
+## Архитектура
 
 ```text
-src/app/                    Route components, public website and layouts
-src/components/matters/     Matter list, form, details and conversations
-src/components/workspace/   Connected workspace sections
-src/components/             Shell, providers, dialogs and shared UI styles
-src/lib/domain.ts           Entities and Zod input schemas
-src/lib/fixtures.ts         Coherent international demo dataset
-src/lib/policy.ts           Centralized demo capabilities and visibility
-src/lib/api/contracts.ts    WorkspaceApi contract and typed errors
-src/lib/api/mock.ts         Asynchronous in-memory adapter
-src/lib/api.ts              Adapter selection boundary
-src/lib/queries.ts          Query keys, workspace loading and format hook
-src/lib/presentation.ts     Domain labels and activity presentation
-src/i18n/                   Reusable formatting and future locale foundations
+src/
+├── app/                     Маршруты, layouts, главная страница и состояния страниц
+├── components/
+│   ├── matters/             Список, форма, карточка дела и переписка
+│   ├── workspace/           Разделы рабочего пространства
+│   └── …                    Оболочка, providers, диалоги и общие UI-стили
+├── lib/
+│   ├── domain.ts            Бизнес-модели и Zod-схемы
+│   ├── fixtures.ts          Связанные демонстрационные данные
+│   ├── policy.ts            Возможности и видимость данных в деморолях
+│   ├── api.ts               Общая точка доступа к API
+│   ├── api/
+│   │   ├── contracts.ts     Контракт WorkspaceApi и типизированные ошибки
+│   │   └── mock.ts          Асинхронный адаптер с данными в памяти
+│   ├── queries.ts           Загрузка workspace, ключи запросов и форматирование
+│   └── presentation.ts      Подписи доменных значений и представление событий
+└── i18n/                    Форматтеры и основа будущей локализации
+
+tests/
+├── api.test.ts              Проверки mock API
+├── i18n.test.ts             Проверки локализационных утилит и форматирования
+└── e2e/                     Браузерные пользовательские сценарии
 ```
 
-Entities carry organization context. Jurisdiction, country, locale, timezone and currency remain independent concepts. Jurisdictions are reference metadata, not encoded legal rules. The demo contains one organization, six clients and seven related matters with documents, tasks, messages and structured activities.
+Поток работы с данными:
 
-Components use `WorkspaceApi` through the facade and Query cache. To connect Express later, implement the contract with an HTTP adapter and select it in `src/lib/api.ts`. Server endpoints must own validation, authorization, organization isolation, persistence and audit events. A future API may split the current workspace snapshot into paginated resource endpoints without changing domain presentation components.
+```text
+Страницы и компоненты
+        ↓
+TanStack Query + API facade
+        ↓
+Контракт WorkspaceApi
+        ↓
+Асинхронный mock-адаптер
+        ↓
+Типизированные данные в памяти вкладки
+```
 
-The mock adapter validates inputs and associations, scopes client visibility and records structured events. These checks demonstrate behavior; they are **not security**. The browser controls the demo identity. No real RBAC or tenant isolation is implemented.
+Бизнес-модели отделены от отображения и транспорта. У сущностей есть контекст организации. Юрисдикция, страна, язык, часовой пояс и валюта рассматриваются независимо друг от друга.
 
-## Demo flows
+Для будущего Express API предусмотрена точка замены адаптера в `src/lib/api.ts`. Проверка прав, изоляция организаций, хранение данных и формирование аудита должны перейти на сервер. При росте данных текущую загрузку workspace можно разделить на отдельные запросы к ресурсам с пагинацией.
 
-1. **New engagement:** open New Matter, provide a client, practice area, jurisdiction, target date and description. Create the matter, send a message, change its status and inspect Activity.
-2. **Client collaboration:** select Client in Settings or navigation. Open Northstar Acquisition, inspect its demo documents and send a message. Switch to Lawyer to reply manually and update the status. There are no simulated lawyer auto-replies.
+### Демонстрационные данные
 
-Help contains controls to fail the next API call and reset demo data. Changes exist in the memory of the current tab and disappear on reload. Client-side navigation preserves them. Downloads contain clearly labeled demonstration text, not genuine legal documents; uploads are not implemented.
+Файл `src/lib/fixtures.ts` содержит согласованный набор: одну организацию, шесть клиентов, семь дел, а также связанные документы, задачи, сообщения и события.
 
-## Language and formatting
+Например, **Northstar Acquisition** связан с клиентом **Asteria Technologies Ltd.**, юрисдикцией **England & Wales** и юристом **Olivia Bennett**. Эти связи используются в разных разделах приложения.
 
-This redesign stage is English-only. The EN control explains the planned language support; it does not pretend to switch languages. Old locale cookies do not affect the interface.
+Mock API проверяет ввод и связи между сущностями, ограничивает клиентскую выборку и создаёт события изменений. Однако все эти операции выполняются в браузере и **не обеспечивают production-безопасность**.
 
-Generic catalogs for English, Russian, Spanish, French and Italian, locale negotiation helpers and `Intl` formatters were preserved as foundations for phase 2. They do not constitute full product localization. Domain labels are centralized in `presentation.ts`; remaining product copy will be extracted during that phase.
+## Сценарии для демонстрации
 
-Dates and numbers use shared `Intl` formatters. Date-only deadlines preserve their calendar date using UTC; timestamps use the independently selected display timezone. Preferences are limited to the current tab. Currency formatting accepts an explicit currency; billing is not implemented.
+### 1. От нового дела до обновления статуса
 
-## Verification
+1. Откройте **New Matter**.
+2. Заполните название, клиента, направление практики, юрисдикцию, будущую целевую дату и описание.
+3. Создайте дело и отправьте сообщение во вкладке **Messages**.
+4. Измените статус в роли **Lawyer**.
+5. Откройте **Activity** и проверьте историю действий.
 
-```sh
-npm run typecheck
-npm run lint
-npm run format:check
-npm test
+### 2. Сотрудничество клиента и юриста
+
+1. В **Settings** или навигации выберите демороль **Client**.
+2. Откройте **Northstar Acquisition**, изучите документы и переписку.
+3. Отправьте сообщение от лица клиента.
+4. Переключитесь на **Lawyer** и ответьте вручную.
+5. Обновите задачу и проверьте сроки в **Calendar**.
+
+Автоматические ответы от имени юриста не генерируются. В **Help** можно дополнительно проверить ошибку API, повторную загрузку и сброс демонстрационных данных.
+
+## Языки и форматирование
+
+Текущий интерфейс Lexora работает **на английском языке**. Элемент **EN** объясняет будущую языковую поддержку; полноценного переключения языка на этом этапе нет.
+
+В `src/i18n/` сохранены общие каталоги и утилиты для будущей локализации на пять языков: **английский, русский, испанский, французский и итальянский**. Они пока не покрывают весь новый интерфейс. Старые locale cookies на текущий язык приложения не влияют.
+
+Даты и числа форматируются общими утилитами на основе `Intl`. Для календарных дат сроков используется UTC, чтобы не смещать день. Временные метки учитывают отдельно выбранный часовой пояс. Форматирование валют принимает явный код валюты; платёжных функций в приложении нет.
+
+## Проверки и форматирование
+
+| Команда                | Назначение                       |
+| ---------------------- | -------------------------------- |
+| `npm run typecheck`    | Проверка типов TypeScript        |
+| `npm run lint`         | Анализ кода ESLint               |
+| `npm run format:check` | Проверка форматирования Prettier |
+| `npm run format`       | Применение форматирования        |
+| `npm test`             | Запуск Vitest                    |
+| `npm run build`        | Production-сборка                |
+| `npm run test:e2e`     | Браузерные проверки Playwright   |
+
+**Vitest** проверяет валидацию, область видимости данных, создание и изменение записей, сообщения, события, восстановление после ошибок, локализационные утилиты и часовые пояса.
+
+**Playwright** проверяет публичную главную, навигацию, поиск, фильтры, создание дела, статусы, сообщения, документы, демороли, диалоги и обработку ошибок на desktop и mobile в Chromium.
+
+Перед первым запуском браузерных тестов установите браузер, если он ещё не установлен:
+
+```bash
+npx playwright install chromium
 npm run build
 npm run test:e2e
 ```
 
-`npm run format` applies Prettier. VS Code formatter settings are included.
+Тесты запускают production-сервер на `127.0.0.1:3107`. Этот порт должен быть свободен. Скриншоты и диагностические traces сохраняются в `test-results/`.
 
-Vitest covers API validation, scope, changes, messages, structured activity, recovery, locale foundations and date/timezone formatting. Playwright covers public homepage navigation and core workspace flows on desktop Chromium and mobile Chromium. It starts a production server at `127.0.0.1:3107`, so build first and keep that port free. Install the browser if necessary with `npx playwright install chromium`. Failure traces and screenshots are written to `test-results/`.
+## Ограничения текущей версии
 
-## Limitations
+- Изменения хранятся в памяти текущей вкладки и сбрасываются после перезагрузки. Переходы внутри приложения сохраняют их.
+- Демороли **Client**, **Lawyer** и **Admin** не являются настоящей авторизацией или безопасным RBAC.
+- В демо одна организация; реальная изоляция арендаторов не реализована.
+- Загрузка файлов на сервер отсутствует. Скачиваемые образцы — демонстрационные текстовые файлы, создаваемые браузером.
+- История действий формируется mock API, а не защищённым серверным аудитом.
+- Аналитика отражает только доступные демоданные. Календарь представляет список сроков без внешних интеграций.
+- Уведомления не доставляются в реальном времени. Backend, PostgreSQL, фоновые задачи и AI не подключены.
+- Тестовые сроки зафиксированы в 2026 году, поэтому показатели ближайших дедлайнов зависят от текущей даты.
+- Прототип помечен `noindex`. Приложение не предоставляет юридических заключений или правовых рекомендаций.
 
-No durable data, real users, permissions, tenant boundaries, uploads, notifications delivery or backend audit log. Analytics summarize the current visible demo data only. Calendar is an agenda, not calendar integration. The interface does not provide legal advice or jurisdiction-specific legal conclusions. The demo uses fixed fictional dates in 2026, so upcoming deadline counts depend on the current date. Public pages have no search-indexing claim; the prototype is marked `noindex`.
+## Планы развития
 
-## Roadmap
+- [x] Международная модель продукта и переработка интерфейса.
+- [x] Публичная главная страница и фирменное оформление Lexora.
+- [x] Связанные рабочие сценарии с mock API и автоматическими проверками.
+- [ ] Полная локализация: English, Русский, Español, Français, Italiano.
+- [ ] REST API на Node.js + Express.
+- [ ] PostgreSQL и миграции.
+- [ ] Аутентификация и серверный RBAC.
+- [ ] Multi-tenancy с изоляцией организаций.
+- [ ] Реальная загрузка документов и файловое хранилище.
+- [ ] Уведомления и realtime.
+- [ ] Серверный аудит и фоновые задачи.
+- [ ] AI-помощь при анализе документов с обязательной профессиональной проверкой.
+- [ ] Docker, CI/CD и production deployment.
 
-1. Global product redesign and public product homepage.
-2. Full internationalization: English, Russian, Spanish, French and Italian.
-3. Node.js + Express REST API.
-4. PostgreSQL and migrations.
-5. Authentication and RBAC: Client, Lawyer, Admin; expanded organization roles as needed.
-6. Multi-tenancy with server-enforced organization isolation.
-7. Real document uploads and storage.
-8. Notifications and realtime.
-9. Backend audit log and background jobs.
-10. AI-assisted document review, always subject to professional review.
-11. Docker, CI/CD and production deployment.
+---
+
+<div align="center">
+
+**Lexora — Global Legal Workspace**  
+Портфолио-проект с архитектурой для дальнейшего fullstack-развития.
+
+</div>
