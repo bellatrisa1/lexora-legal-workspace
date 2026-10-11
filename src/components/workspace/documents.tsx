@@ -1,14 +1,20 @@
 'use client';
+import { useT } from '@/i18n/provider';
+
 import Link from 'next/link';
 import { useState } from 'react';
 import { Search, Download, FileText } from 'lucide-react';
 import type { WorkspaceData } from '@/lib/domain';
 import { useWorkspace, useFormat } from '@/lib/queries';
-import { documentLabels, errorMessage } from '@/lib/presentation';
+import { usePresentation } from '@/lib/presentation';
 import { matterName } from '@/lib/selectors';
 import { Badge, Empty, ErrorState, Loading, PageHeading } from '../common';
 import s from '../ui.module.scss';
 export function DocumentList({ data, matterId }: { data: WorkspaceData; matterId?: string }) {
+  const { documentLabels } = usePresentation();
+
+  const translate = useT();
+
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
   const format = useFormat();
@@ -24,19 +30,19 @@ export function DocumentList({ data, matterId }: { data: WorkspaceData; matterId
         <label className={s.search}>
           <Search size={14} />
           <input
-            aria-label="Search documents"
-            placeholder="Search documents…"
+            aria-label={translate('documents.searchDocuments')}
+            placeholder={translate('documents.searchDocuments2')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </label>
         <select
           className={s.select}
-          aria-label="Document status"
+          aria-label={translate('documents.documentStatus')}
           value={status}
           onChange={(e) => setStatus(e.target.value)}
         >
-          <option value="all">All document statuses</option>
+          <option value="all"> {translate('documents.allDocumentStatuses')} </option>
           {Object.entries(documentLabels).map(([value, label]) => (
             <option key={value} value={value}>
               {label}
@@ -49,12 +55,12 @@ export function DocumentList({ data, matterId }: { data: WorkspaceData; matterId
           <table className={s.table}>
             <thead>
               <tr>
-                <th>Document</th>
-                <th>Status</th>
-                <th>Added by</th>
-                <th>Version</th>
+                <th> {translate('documents.document')} </th>
+                <th> {translate('matters.status')} </th>
+                <th> {translate('documents.addedBy')} </th>
+                <th> {translate('documents.version')} </th>
                 <th>
-                  <span className={s.srOnly}>Download</span>
+                  <span className={s.srOnly}> {translate('documents.download')} </span>
                 </th>
               </tr>
             </thead>
@@ -73,20 +79,20 @@ export function DocumentList({ data, matterId }: { data: WorkspaceData; matterId
                       </Link>
                     </small>
                   </td>
-                  <td data-label="Status">
+                  <td data-label={translate('matters.status')}>
                     <Badge status={doc.status} label={documentLabels[doc.status]} />
                   </td>
-                  <td data-label="Added by">
+                  <td data-label={translate('documents.addedBy')}>
                     {data.users.find((u) => u.id === doc.uploadedBy)?.name}
                     <small>{format.dateTime(doc.uploadedAt)}</small>
                   </td>
-                  <td data-label="Version">v{format.number(doc.version)}</td>
+                  <td data-label={translate('documents.version')}>v{format.number(doc.version)}</td>
                   <td>
                     <a
                       className={s.iconButton}
                       download={`${doc.name}.demo.txt`}
-                      href={`data:text/plain;charset=utf-8,${encodeURIComponent(`LEXORA — DEMONSTRATION DOCUMENT\n\n${doc.name}\nVersion ${doc.version}\n\nThis fictional sample contains no legal advice or operative agreement. It is generated in the browser. No file was uploaded to a server.`)}`}
-                      aria-label={`Download demo sample: ${doc.name}`}
+                      href={`data:text/plain;charset=utf-8,${encodeURIComponent(translate('documents.sample', { name: doc.name, version: doc.version }))}`}
+                      aria-label={translate('documents.downloadSample', { name: doc.name })}
                     >
                       <Download size={14} />
                     </a>
@@ -98,18 +104,22 @@ export function DocumentList({ data, matterId }: { data: WorkspaceData; matterId
         </div>
       ) : (
         <Empty
-          title="No documents found"
-          text="Documents linked to this matter will appear here. Try another filter if you are searching."
+          title={translate('documents.noDocumentsFound')}
+          text={translate('documents.documentsLinkedToThisMatterWillAppear')}
         />
       )}
       <div className={s.tableFooter}>
-        <span>{docs.length} documents</span>
-        <span>Demo text samples · no real file storage</span>
+        <span>{translate('documents.count', { count: docs.length })}</span>
+        <span> {translate('documents.demoTextSamplesNoRealFileStorage')} </span>
       </div>
     </>
   );
 }
 export function DocumentsPage() {
+  const { errorMessage } = usePresentation();
+
+  const translate = useT();
+
   const query = useWorkspace();
   if (query.isPending) return <Loading />;
   if (query.error)
@@ -117,8 +127,8 @@ export function DocumentsPage() {
   return (
     <>
       <PageHeading
-        title="Documents"
-        description="The right version. The right matter. One shared document workspace."
+        title={translate('navigation.documents')}
+        description={translate('documents.theRightVersionTheRightMatterOne')}
       />
       <section className={s.panel}>
         <DocumentList data={query.data} />

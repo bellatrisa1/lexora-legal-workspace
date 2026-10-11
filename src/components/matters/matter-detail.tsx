@@ -1,4 +1,6 @@
 'use client';
+import { useT } from '@/i18n/provider';
+
 import { useState } from 'react';
 import Link from 'next/link';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -7,7 +9,7 @@ import { api } from '@/lib/api';
 import { matterStatuses, type MatterStatus } from '@/lib/domain';
 import { useWorkspace, useFormat } from '@/lib/queries';
 import { capabilities } from '@/lib/policy';
-import { errorMessage, statusLabels } from '@/lib/presentation';
+import { usePresentation } from '@/lib/presentation';
 import { useWorkspaceContext } from '../providers';
 import { Loading, ErrorState, Empty, Avatar, Badge, PriorityBadge } from '../common';
 import { DocumentList } from '../workspace/documents';
@@ -18,6 +20,10 @@ import s from '../ui.module.scss';
 const sections = ['overview', 'documents', 'tasks', 'messages', 'activity'] as const;
 type Section = (typeof sections)[number];
 export function MatterDetail({ id, initialTab = 'overview' }: { id: string; initialTab?: string }) {
+  const { errorMessage, statusLabels } = usePresentation();
+
+  const translate = useT();
+
   const query = useWorkspace();
   const format = useFormat();
   const { session } = useWorkspaceContext();
@@ -37,11 +43,12 @@ export function MatterDetail({ id, initialTab = 'overview' }: { id: string; init
   if (!matter)
     return (
       <Empty
-        title="Matter not found"
-        text="This matter is unavailable in your current demo workspace."
+        title={translate('matters.matterNotFound')}
+        text={translate('matters.thisMatterIsUnavailableInYourCurrent')}
       >
         <Link href="/matters" className={s.secondary}>
-          Back to matters
+          {' '}
+          {translate('matters.backToMatters')}{' '}
         </Link>
       </Empty>
     );
@@ -51,8 +58,7 @@ export function MatterDetail({ id, initialTab = 'overview' }: { id: string; init
   return (
     <>
       <Link href="/matters" className={s.back}>
-        <ArrowLeft size={13} />
-        All matters
+        <ArrowLeft size={13} /> {translate('matters.allMatters')}{' '}
       </Link>
       <div className={s.heading}>
         <div>
@@ -75,7 +81,7 @@ export function MatterDetail({ id, initialTab = 'overview' }: { id: string; init
           <Badge status={matter.status} />
         </div>
       </div>
-      <div className={s.tabs} role="tablist" aria-label="Matter sections">
+      <div className={s.tabs} role="tablist" aria-label={translate('matters.matterSections')}>
         {sections.map((name, index) => (
           <button
             key={name}
@@ -104,7 +110,17 @@ export function MatterDetail({ id, initialTab = 'overview' }: { id: string; init
               }
             }}
           >
-            {name[0].toUpperCase() + name.slice(1)}
+            {translate(
+              (
+                {
+                  overview: 'navigation.overview',
+                  documents: 'navigation.documents',
+                  tasks: 'navigation.tasks',
+                  messages: 'navigation.messages',
+                  activity: 'home.activity',
+                } as const
+              )[name],
+            )}
             {name === 'documents' && ` (${data.documents.filter((d) => d.matterId === id).length})`}
           </button>
         ))}
@@ -120,20 +136,20 @@ export function MatterDetail({ id, initialTab = 'overview' }: { id: string; init
             <>
               <div className={s.panel}>
                 <div className={s.panelHeader}>
-                  <h2>Scope & context</h2>
+                  <h2> {translate('matters.scopeContext')} </h2>
                 </div>
                 <div className={s.body}>
                   <p>{matter.description}</p>
                   <hr className={s.divider} />
                   <dl className={s.definition}>
                     <div>
-                      <dt>Practice area</dt>
+                      <dt> {translate('matters.practiceArea')} </dt>
                       <dd>
                         {data.practiceAreas.find((p) => p.id === matter.practiceAreaId)?.name}
                       </dd>
                     </div>
                     <div>
-                      <dt>Client</dt>
+                      <dt> {translate('matters.client')} </dt>
                       <dd>
                         <Link href={`/clients/${matter.clientId}`} className={s.link}>
                           {client?.name} →
@@ -145,9 +161,10 @@ export function MatterDetail({ id, initialTab = 'overview' }: { id: string; init
               </div>
               <div className={s.panel}>
                 <div className={s.panelHeader}>
-                  <h2>Recent activity</h2>
+                  <h2> {translate('matters.recentActivity')} </h2>
                   <button className={s.secondary} onClick={() => setSection('activity')}>
-                    View all
+                    {' '}
+                    {translate('matters.viewAll')}{' '}
                   </button>
                 </div>
                 <ActivityFeed data={data} matterId={id} limit={3} />
@@ -172,11 +189,12 @@ export function MatterDetail({ id, initialTab = 'overview' }: { id: string; init
           {section === 'activity' && (
             <div className={s.panel}>
               <div className={s.panelHeader}>
-                <h2>Matter activity</h2>
+                <h2> {translate('matters.matterActivity')} </h2>
               </div>
               <ActivityFeed data={data} matterId={id} />
               <p className={s.notice}>
-                This is a demo timeline. A trusted, server-generated audit log is planned.
+                {' '}
+                {translate('matters.activityIsRecordedByTheSelectedApi')}{' '}
               </p>
             </div>
           )}
@@ -184,12 +202,12 @@ export function MatterDetail({ id, initialTab = 'overview' }: { id: string; init
         <aside className={s.stack}>
           <section className={s.panel}>
             <div className={s.panelHeader}>
-              <h2>Matter details</h2>
+              <h2> {translate('matters.matterDetails')} </h2>
             </div>
             <div className={s.body}>
               <dl className={s.definition}>
                 <div>
-                  <dt>Lead counsel</dt>
+                  <dt> {translate('matters.leadCounsel')} </dt>
                   <dd>
                     {lead ? (
                       <span className={s.person}>
@@ -197,36 +215,36 @@ export function MatterDetail({ id, initialTab = 'overview' }: { id: string; init
                         {lead.name}
                       </span>
                     ) : (
-                      'Unassigned'
+                      translate('matters.unassigned')
                     )}
                   </dd>
                 </div>
                 <div>
-                  <dt>Team</dt>
+                  <dt> {translate('matters.team')} </dt>
                   <dd>
                     {matter.teamIds.length
                       ? matter.teamIds.map((userId) => (
                           <div key={userId}>{data.users.find((u) => u.id === userId)?.name}</div>
                         ))
-                      : 'No team assigned yet'}
+                      : translate('matters.noTeamAssignedYet')}
                   </dd>
                 </div>
                 <div>
-                  <dt>Target date</dt>
+                  <dt> {translate('matters.targetDate')} </dt>
                   <dd>{format.date(matter.targetDate)}</dd>
                 </div>
                 <div>
-                  <dt>Created</dt>
+                  <dt> {translate('matters.created')} </dt>
                   <dd>{format.date(matter.createdAt, 'short')}</dd>
                 </div>
                 <div>
-                  <dt>Last updated</dt>
+                  <dt> {translate('matters.lastUpdated')} </dt>
                   <dd>{format.dateTime(matter.updatedAt)}</dd>
                 </div>
               </dl>
               {can.changeMatterStatus && (
                 <div className={s.field} style={{ marginTop: 24 }}>
-                  <label htmlFor="matter-status">Matter status</label>
+                  <label htmlFor="matter-status"> {translate('matters.matterStatus')} </label>
                   <select
                     id="matter-status"
                     value={matter.status}
@@ -239,8 +257,12 @@ export function MatterDetail({ id, initialTab = 'overview' }: { id: string; init
                       </option>
                     ))}
                   </select>
-                  {mutation.isPending && <small role="status">Updating status…</small>}
-                  {mutation.isSuccess && <small role="status">Status updated.</small>}
+                  {mutation.isPending && (
+                    <small role="status"> {translate('matters.updatingStatus')} </small>
+                  )}
+                  {mutation.isSuccess && (
+                    <small role="status"> {translate('matters.statusUpdated')} </small>
+                  )}
                   {mutation.error && (
                     <span role="alert" className={s.error}>
                       {errorMessage(mutation.error)}
@@ -251,8 +273,8 @@ export function MatterDetail({ id, initialTab = 'overview' }: { id: string; init
             </div>
           </section>
           <div className={s.notice}>
-            Jurisdiction is matter metadata. Lexora does not determine applicable law or provide
-            legal conclusions.
+            {' '}
+            {translate('matters.jurisdictionIsMatterMetadataLexoraDoesNot')}{' '}
           </div>
         </aside>
       </div>

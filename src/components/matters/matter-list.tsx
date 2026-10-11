@@ -1,10 +1,12 @@
 'use client';
+import { useT } from '@/i18n/provider';
+
 import { useState } from 'react';
 import Link from 'next/link';
 import { Plus, Search, SlidersHorizontal } from 'lucide-react';
 import { useWorkspace } from '@/lib/queries';
 import { matterStatuses } from '@/lib/domain';
-import { errorMessage, statusLabels } from '@/lib/presentation';
+import { usePresentation } from '@/lib/presentation';
 import { Loading, ErrorState, PageHeading } from '../common';
 import { MatterTable } from './matter-table';
 import s from '../ui.module.scss';
@@ -15,6 +17,10 @@ export function MatterList({
   initialSearch?: string;
   initialStatus?: string;
 }) {
+  const { errorMessage, statusLabels } = usePresentation();
+
+  const translate = useT();
+
   const query = useWorkspace();
   const [search, setSearch] = useState(initialSearch);
   const [status, setStatus] = useState(initialStatus);
@@ -58,21 +64,20 @@ export function MatterList({
   return (
     <>
       <PageHeading
-        title="Matters"
-        description="A clear view of every engagement, across clients and jurisdictions."
+        title={translate('matters.matters')}
+        description={translate('matters.aClearViewOfEveryEngagementAcross')}
       >
         <Link href="/matters/new" className={s.button}>
-          <Plus size={14} />
-          Create matter
+          <Plus size={14} /> {translate('matters.createMatter')}{' '}
         </Link>
       </PageHeading>
-      <div className={s.tabs} aria-label="Matter views">
+      <div className={s.tabs} aria-label={translate('matters.matterViews')}>
         {[
-          ['all', 'All matters'],
-          ['active', 'Active'],
-          ['in_review', 'In review'],
-          ['client_action', 'Client action'],
-          ['closed', 'Closed'],
+          ['all', translate('matters.allMatters')],
+          ['active', translate('matters.active')],
+          ['in_review', translate('matters.inReview')],
+          ['client_action', translate('matters.clientAction')],
+          ['closed', translate('matters.closed')],
         ].map(([value, label]) => (
           <button
             key={value}
@@ -84,27 +89,27 @@ export function MatterList({
           </button>
         ))}
       </div>
-      <section className={s.panel} aria-label="Matter list">
+      <section className={s.panel} aria-label={translate('matters.matterList')}>
         <div className={s.toolbar}>
           <label className={s.search}>
             <Search size={15} />
             <input
-              aria-label="Search matters"
-              placeholder="Search by matter, client or reference…"
+              aria-label={translate('matters.searchMatters')}
+              placeholder={translate('matters.searchByMatterClientOrReference')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </label>
           <select
             className={s.select}
-            aria-label="Sort matters"
+            aria-label={translate('matters.sortMatters')}
             value={sort}
             onChange={(e) => setSort(e.target.value)}
           >
-            <option value="updated">Recently updated</option>
-            <option value="date">Target date</option>
-            <option value="name">Matter name</option>
-            <option value="priority">Priority</option>
+            <option value="updated"> {translate('matters.recentlyUpdated')} </option>
+            <option value="date"> {translate('matters.targetDate')} </option>
+            <option value="name"> {translate('matters.matterName')} </option>
+            <option value="priority"> {translate('matters.priority')} </option>
           </select>
         </div>
         <div className={s.toolbar}>
@@ -112,12 +117,12 @@ export function MatterList({
           <div className={s.filterRow}>
             <select
               className={s.select}
-              aria-label="Status filter"
+              aria-label={translate('matters.statusFilter')}
               value={status}
               onChange={(e) => setStatus(e.target.value)}
             >
-              <option value="all">All statuses</option>
-              <option value="active">Active matters</option>
+              <option value="all"> {translate('matters.allStatuses')} </option>
+              <option value="active"> {translate('matters.activeMatters')} </option>
               {matterStatuses.map((value) => (
                 <option key={value} value={value}>
                   {statusLabels[value]}
@@ -126,11 +131,11 @@ export function MatterList({
             </select>
             <select
               className={s.select}
-              aria-label="Practice area filter"
+              aria-label={translate('matters.practiceAreaFilter')}
               value={practice}
               onChange={(e) => setPractice(e.target.value)}
             >
-              <option value="all">All practice areas</option>
+              <option value="all"> {translate('matters.allPracticeAreas')} </option>
               {data.practiceAreas.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name}
@@ -139,11 +144,11 @@ export function MatterList({
             </select>
             <select
               className={s.select}
-              aria-label="Jurisdiction filter"
+              aria-label={translate('matters.jurisdictionFilter')}
               value={jurisdiction}
               onChange={(e) => setJurisdiction(e.target.value)}
             >
-              <option value="all">All jurisdictions</option>
+              <option value="all"> {translate('matters.allJurisdictions')} </option>
               {data.jurisdictions.map((j) => (
                 <option key={j.id} value={j.id}>
                   {j.name}
@@ -152,12 +157,12 @@ export function MatterList({
             </select>
             <select
               className={s.select}
-              aria-label="Lead counsel filter"
+              aria-label={translate('matters.leadCounselFilter')}
               value={lead}
               onChange={(e) => setLead(e.target.value)}
             >
-              <option value="all">All lead counsel</option>
-              <option value="">Unassigned</option>
+              <option value="all"> {translate('matters.allLeadCounsel')} </option>
+              <option value=""> {translate('matters.unassigned')} </option>
               {data.users
                 .filter((u) => u.role === 'lawyer')
                 .map((u) => (
@@ -167,16 +172,20 @@ export function MatterList({
                 ))}
             </select>
             <button className={s.secondary} onClick={reset}>
-              Reset filters
+              {' '}
+              {translate('matters.resetFilters')}{' '}
             </button>
           </div>
         </div>
         <MatterTable matters={visible} data={data} />
         <div className={s.tableFooter}>
           <span role="status">
-            {visible.length} of {data.matters.length} matters
+            {translate('matters.resultCount', {
+              count: visible.length,
+              total: data.matters.length,
+            })}
           </span>
-          <span>All dates are target dates</span>
+          <span> {translate('matters.allDatesAreTargetDates')} </span>
         </div>
       </section>
     </>

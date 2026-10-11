@@ -1,4 +1,6 @@
 'use client';
+import { useT } from '@/i18n/provider';
+
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import type { Matter, WorkspaceData } from '@/lib/domain';
@@ -14,20 +16,33 @@ export function MatterTable({
   data: WorkspaceData;
   compact?: boolean;
 }) {
+  const translate = useT();
+
   const format = useFormat();
   if (!matters.length)
-    return <Empty title="No matters found" text="Try a different search or reset your filters." />;
+    return (
+      <Empty
+        title={translate('matters.noMattersFound')}
+        text={translate('matters.tryADifferentSearchOrResetYour')}
+      />
+    );
   return (
     <div className={s.tableWrap}>
       <table className={s.table}>
         <thead>
           <tr>
-            <th>Matter / Client</th>
-            <th>Status</th>
-            {!compact && <th>Jurisdiction</th>}
-            <th>Lead counsel</th>
-            <th>Target date</th>
-            <th>{compact ? <span className={s.srOnly}>Open matter</span> : 'Priority'}</th>
+            <th> {translate('matters.matterClient')} </th>
+            <th> {translate('matters.status')} </th>
+            {!compact && <th> {translate('matters.jurisdiction')} </th>}
+            <th> {translate('matters.leadCounsel')} </th>
+            <th> {translate('matters.targetDate')} </th>
+            <th>
+              {compact ? (
+                <span className={s.srOnly}> {translate('matters.openMatter')} </span>
+              ) : (
+                translate('matters.priority')
+              )}
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -41,28 +56,35 @@ export function MatterTable({
                   </Link>
                   <small>{data.clients.find((c) => c.id === matter.clientId)?.name}</small>
                 </td>
-                <td data-label="Status">
+                <td data-label={translate('matters.status')}>
                   <Badge status={matter.status} />
                 </td>
                 {!compact && (
-                  <td data-label="Jurisdiction">
+                  <td data-label={translate('matters.jurisdiction')}>
                     {data.jurisdictions.find((j) => j.id === matter.jurisdictionId)?.name}
                   </td>
                 )}
-                <td data-label="Lead counsel">
+                <td data-label={translate('matters.leadCounsel')}>
                   {lead ? (
                     <span className={s.person}>
                       <Avatar name={lead.name} initials={lead.initials} />
                       {lead.name.split(' ')[0]} {lead.name.split(' ')[1]?.[0]}.
                     </span>
                   ) : (
-                    'Unassigned'
+                    translate('matters.unassigned')
                   )}
                 </td>
-                <td data-label="Target date">{format.date(matter.targetDate, 'short')}</td>
+                <td data-label={translate('matters.targetDate')}>
+                  {format.date(matter.targetDate, 'short')}
+                </td>
                 <td>
                   {compact ? (
-                    <Link href={`/matters/${matter.id}`} aria-label={`Open ${matter.reference}`}>
+                    <Link
+                      href={`/matters/${matter.id}`}
+                      aria-label={translate('matters.openReference', {
+                        reference: matter.reference,
+                      })}
+                    >
                       <ChevronRight size={15} />
                     </Link>
                   ) : (

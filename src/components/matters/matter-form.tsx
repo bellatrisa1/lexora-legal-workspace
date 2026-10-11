@@ -1,6 +1,9 @@
 'use client';
+import { useT } from '@/i18n/provider';
+
 import { useRef, useState } from 'react';
 import Link from 'next/link';
+import { isRestMode } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, ArrowRight, FileText } from 'lucide-react';
@@ -8,12 +11,16 @@ import { matterSchema, priorities, validationCode } from '@/lib/domain';
 import { api } from '@/lib/api';
 import { useWorkspace } from '@/lib/queries';
 import { capabilities } from '@/lib/policy';
-import { errorMessage, priorityLabels } from '@/lib/presentation';
-import copy from '@/i18n/messages/en.json';
+import { usePresentation } from '@/lib/presentation';
+
 import { useWorkspaceContext } from '../providers';
 import { ErrorState, Loading, PageHeading } from '../common';
 import s from '../ui.module.scss';
 export function MatterForm() {
+  const { errorMessage, priorityLabels } = usePresentation();
+
+  const translate = useT();
+
   const { session } = useWorkspaceContext();
   const query = useWorkspace();
   const cache = useQueryClient();
@@ -35,12 +42,11 @@ export function MatterForm() {
   return (
     <>
       <Link href="/matters" className={s.back}>
-        <ArrowLeft size={13} />
-        Back to matters
+        <ArrowLeft size={13} /> {translate('matters.backToMatters')}{' '}
       </Link>
       <PageHeading
-        title="Create a matter"
-        description="Set the context. Bring the right people and information together."
+        title={translate('matters.createAMatter')}
+        description={translate('matters.setTheContextBringTheRightPeople')}
       />
       <div className={s.twoColumns}>
         <section className={s.panel}>
@@ -57,7 +63,7 @@ export function MatterForm() {
               if (!result.success) {
                 const next: Record<string, string> = {};
                 for (const issue of result.error.issues)
-                  next[String(issue.path[0])] ??= copy.validation[validationCode(issue.message)];
+                  next[String(issue.path[0])] ??= validationCode(issue.message);
                 setErrors(next);
                 const first = form.current?.elements.namedItem(Object.keys(next)[0]);
                 if (first instanceof HTMLElement) first.focus();
@@ -68,21 +74,35 @@ export function MatterForm() {
             }}
           >
             <div className={s.formSection}>
-              <h2>Matter essentials</h2>
-              <p>Fields marked with * are required.</p>
+              <h2> {translate('matters.matterEssentials')} </h2>
+              <p> {translate('matters.fieldsMarkedWithAreRequired')} </p>
             </div>
-            <Field name="title" label="Matter name" error={errors.title}>
+            <Field
+              name="title"
+              label={translate('matters.matterName')}
+              error={
+                errors.title ? translate(`validation.${validationCode(errors.title)}`) : undefined
+              }
+            >
               <input
                 id="title"
                 name="title"
                 maxLength={120}
-                placeholder="e.g. Cross-border technology acquisition"
+                placeholder={translate('matters.egCrossborderTechnologyAcquisition')}
                 aria-invalid={!!errors.title}
                 aria-describedby="title-error"
               />
             </Field>
             <div className={s.formRow}>
-              <Field name="clientId" label="Client" error={errors.clientId}>
+              <Field
+                name="clientId"
+                label={translate('matters.client')}
+                error={
+                  errors.clientId
+                    ? translate(`validation.${validationCode(errors.clientId)}`)
+                    : undefined
+                }
+              >
                 <select
                   id="clientId"
                   name="clientId"
@@ -96,7 +116,15 @@ export function MatterForm() {
                   ))}
                 </select>
               </Field>
-              <Field name="practiceAreaId" label="Practice area" error={errors.practiceAreaId}>
+              <Field
+                name="practiceAreaId"
+                label={translate('matters.practiceArea')}
+                error={
+                  errors.practiceAreaId
+                    ? translate(`validation.${validationCode(errors.practiceAreaId)}`)
+                    : undefined
+                }
+              >
                 <select id="practiceAreaId" name="practiceAreaId">
                   {data.practiceAreas.map((p) => (
                     <option key={p.id} value={p.id}>
@@ -107,7 +135,15 @@ export function MatterForm() {
               </Field>
             </div>
             <div className={s.formRow}>
-              <Field name="jurisdictionId" label="Jurisdiction" error={errors.jurisdictionId}>
+              <Field
+                name="jurisdictionId"
+                label={translate('matters.jurisdiction')}
+                error={
+                  errors.jurisdictionId
+                    ? translate(`validation.${validationCode(errors.jurisdictionId)}`)
+                    : undefined
+                }
+              >
                 <select id="jurisdictionId" name="jurisdictionId">
                   {data.jurisdictions.map((j) => (
                     <option key={j.id} value={j.id}>
@@ -116,7 +152,15 @@ export function MatterForm() {
                   ))}
                 </select>
               </Field>
-              <Field name="targetDate" label="Target date" error={errors.targetDate}>
+              <Field
+                name="targetDate"
+                label={translate('matters.targetDate')}
+                error={
+                  errors.targetDate
+                    ? translate(`validation.${validationCode(errors.targetDate)}`)
+                    : undefined
+                }
+              >
                 <input
                   id="targetDate"
                   name="targetDate"
@@ -131,12 +175,16 @@ export function MatterForm() {
               {can.assignCounsel ? (
                 <Field
                   name="leadCounselId"
-                  label="Lead counsel"
+                  label={translate('matters.leadCounsel')}
                   optional
-                  error={errors.leadCounselId}
+                  error={
+                    errors.leadCounselId
+                      ? translate(`validation.${validationCode(errors.leadCounselId)}`)
+                      : undefined
+                  }
                 >
                   <select id="leadCounselId" name="leadCounselId">
-                    <option value="">Assign later</option>
+                    <option value=""> {translate('matters.assignLater')} </option>
                     {data.users
                       .filter((u) => u.role === 'lawyer')
                       .map((user) => (
@@ -149,7 +197,15 @@ export function MatterForm() {
               ) : (
                 <input type="hidden" name="leadCounselId" value="" />
               )}
-              <Field name="priority" label="Priority" error={errors.priority}>
+              <Field
+                name="priority"
+                label={translate('matters.priority')}
+                error={
+                  errors.priority
+                    ? translate(`validation.${validationCode(errors.priority)}`)
+                    : undefined
+                }
+              >
                 <select id="priority" name="priority" defaultValue="medium">
                   {priorities.map((p) => (
                     <option key={p} value={p}>
@@ -159,20 +215,27 @@ export function MatterForm() {
                 </select>
               </Field>
             </div>
-            <Field name="description" label="Description" error={errors.description}>
+            <Field
+              name="description"
+              label={translate('matters.description')}
+              error={
+                errors.description
+                  ? translate(`validation.${validationCode(errors.description)}`)
+                  : undefined
+              }
+            >
               <textarea
                 id="description"
                 name="description"
                 maxLength={4000}
-                placeholder="Describe the scope, desired outcome, key dates and people involved…"
+                placeholder={translate('matters.describeTheScopeDesiredOutcomeKeyDates')}
                 aria-invalid={!!errors.description}
                 aria-describedby="description-error"
               />
-              <small>20–4,000 characters. Use fictional information in this demo.</small>
+              <small> {translate('matters.204000CharactersUseFictionalInformationInThis')} </small>
             </Field>
             <div className={s.notice}>
-              <FileText size={14} /> Documents can be reviewed within a matter. Real file uploads
-              are not connected in this demo.
+              <FileText size={14} /> {translate('matters.documentsCanBeReviewedWithinAMatter')}{' '}
             </div>
             {mutation.error && (
               <p role="alert" className={s.error}>
@@ -181,41 +244,43 @@ export function MatterForm() {
             )}
             <div className={s.actions}>
               <button className={s.button} disabled={mutation.isPending}>
-                {mutation.isPending ? 'Creating matter…' : 'Create matter'}
+                {mutation.isPending
+                  ? translate('matters.creatingMatter')
+                  : translate('matters.createMatter')}
                 <ArrowRight size={14} />
               </button>
               <Link href="/matters" className={s.secondary}>
-                Cancel
+                {' '}
+                {translate('matters.cancel')}{' '}
               </Link>
             </div>
           </form>
         </section>
         <aside className={s.panel}>
           <div className={s.body}>
-            <p className={s.eyebrow}>A connected workspace</p>
-            <h2>Start with a clear scope</h2>
-            <p className={s.subheading}>
-              A matter brings together a client, a legal team and a defined piece of work.
-            </p>
+            <p className={s.eyebrow}> {translate('matters.aConnectedWorkspace')} </p>
+            <h2> {translate('matters.startWithAClearScope')} </h2>
+            <p className={s.subheading}> {translate('matters.aMatterBringsTogetherAClientA')} </p>
             <dl className={s.definition}>
               <div>
-                <dt>Organization</dt>
+                <dt> {translate('matters.organization')} </dt>
                 <dd>{data.organization.name}</dd>
               </div>
               <div>
-                <dt>Jurisdiction</dt>
-                <dd>A reference for your team, not an automated legal assessment.</dd>
+                <dt> {translate('matters.jurisdiction')} </dt>
+                <dd> {translate('matters.aReferenceForYourTeamNotAn')} </dd>
               </div>
               <div>
-                <dt>What happens next?</dt>
-                <dd>
-                  The matter opens with an activity record. Your team can review its status and
-                  start the conversation.
-                </dd>
+                <dt> {translate('matters.whatHappensNext')} </dt>
+                <dd> {translate('matters.theMatterOpensWithAnActivityRecord')} </dd>
               </div>
             </dl>
             <hr className={s.divider} />
-            <p className={s.small}>Demo changes are stored in this tab and reset on reload.</p>
+            <p className={s.small}>
+              {isRestMode
+                ? translate('matters.changesAreSavedInPostgresqlDemoIdentity')
+                : translate('matters.demoChangesAreStoredInThisTab')}
+            </p>
           </div>
         </aside>
       </div>

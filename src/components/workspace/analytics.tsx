@@ -1,10 +1,16 @@
 'use client';
+import { useT } from '@/i18n/provider';
+
 import { useWorkspace, useFormat } from '@/lib/queries';
 import { matterStatuses } from '@/lib/domain';
-import { statusLabels, errorMessage } from '@/lib/presentation';
+import { usePresentation } from '@/lib/presentation';
 import { Loading, ErrorState, PageHeading } from '../common';
 import s from '../ui.module.scss';
 export function AnalyticsPage() {
+  const { statusLabels, errorMessage } = usePresentation();
+
+  const translate = useT();
+
   const query = useWorkspace();
   const format = useFormat();
   if (query.isPending) return <Loading />;
@@ -13,28 +19,28 @@ export function AnalyticsPage() {
   const data = query.data;
   const groups = [
     {
-      title: 'Matter status',
+      title: translate('matters.matterStatus'),
       items: matterStatuses.map((status) => ({
         name: statusLabels[status],
         count: data.matters.filter((m) => m.status === status).length,
       })),
     },
     {
-      title: 'Practice areas',
+      title: translate('analytics.practiceAreas'),
       items: data.practiceAreas.map((area) => ({
         name: area.name,
         count: data.matters.filter((m) => m.practiceAreaId === area.id).length,
       })),
     },
     {
-      title: 'Jurisdictions',
+      title: translate('analytics.jurisdictions'),
       items: data.jurisdictions.map((j) => ({
         name: j.name,
         count: data.matters.filter((m) => m.jurisdictionId === j.id).length,
       })),
     },
     {
-      title: 'Lead counsel workload',
+      title: translate('analytics.leadCounselWorkload'),
       items: data.users
         .filter((u) => u.role === 'lawyer')
         .map((user) => ({
@@ -47,12 +53,12 @@ export function AnalyticsPage() {
   return (
     <>
       <PageHeading
-        title="Workspace insights"
-        description="Understand how your current work is distributed. No estimates or synthetic trends."
+        title={translate('analytics.workspaceInsights')}
+        description={translate('analytics.understandHowYourCurrentWorkIsDistributed')}
       />
       <div className={s.notice} style={{ marginBottom: 24 }}>
-        Based on {format.number(data.matters.length)} matters visible to your demo identity. Lead
-        counsel workload counts active matters only.
+        {' '}
+        {translate('analytics.summary', { count: data.matters.length })}
       </div>
       <div
         className={s.grid}

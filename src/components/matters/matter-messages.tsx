@@ -1,4 +1,6 @@
 'use client';
+import { useT } from '@/i18n/provider';
+
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Send } from 'lucide-react';
@@ -6,12 +8,16 @@ import type { WorkspaceData } from '@/lib/domain';
 import { messageSchema, validationCode } from '@/lib/domain';
 import { api } from '@/lib/api';
 import { useFormat } from '@/lib/queries';
-import { errorMessage } from '@/lib/presentation';
-import copy from '@/i18n/messages/en.json';
+import { usePresentation } from '@/lib/presentation';
+
 import { useWorkspaceContext } from '../providers';
 import { Avatar, Empty } from '../common';
 import s from '../ui.module.scss';
 export function MatterMessages({ data, matterId }: { data: WorkspaceData; matterId: string }) {
+  const { errorMessage } = usePresentation();
+
+  const translate = useT();
+
   const { session } = useWorkspaceContext();
   const cache = useQueryClient();
   const format = useFormat();
@@ -31,20 +37,19 @@ export function MatterMessages({ data, matterId }: { data: WorkspaceData; matter
     .toSorted((a, b) => a.createdAt.localeCompare(b.createdAt));
   return (
     <div className={s.body}>
-      <div className={s.notice}>
-        A shared conversation with the client and legal team. Demo messages stay in this tab; no
-        automatic lawyer replies are generated.
-      </div>
+      <div className={s.notice}> {translate('matters.aSharedConversationWithTheClientAnd')} </div>
       {messages.length ? (
         messages.map((message) => {
           const author = data.users.find((u) => u.id === message.authorId);
           return (
             <article className={s.message} key={message.id}>
               <header>
-                <Avatar name={author?.name ?? 'Member'} />
+                <Avatar name={author?.name ?? translate('matters.member')} />
                 <strong>{author?.name}</strong>
                 <span className={s.small}>
-                  {author?.role === 'client' ? 'Client' : 'Legal team'}
+                  {author?.role === 'client'
+                    ? translate('matters.client')
+                    : translate('matters.legalTeam')}
                 </span>
                 <time dateTime={message.createdAt}>{format.dateTime(message.createdAt)}</time>
               </header>
@@ -54,8 +59,8 @@ export function MatterMessages({ data, matterId }: { data: WorkspaceData; matter
         })
       ) : (
         <Empty
-          title="Start the conversation"
-          text="Share an update, ask a question or clarify the next step."
+          title={translate('matters.startTheConversation')}
+          text={translate('matters.shareAnUpdateAskAQuestionOr')}
         />
       )}
       <form
@@ -65,7 +70,7 @@ export function MatterMessages({ data, matterId }: { data: WorkspaceData; matter
           if (mutation.isPending) return;
           const parsed = messageSchema.safeParse(text);
           if (!parsed.success) {
-            setValidation(copy.validation[validationCode(parsed.error.issues[0].message)]);
+            setValidation(validationCode(parsed.error.issues[0].message));
             return;
           }
           setValidation('');
@@ -74,7 +79,7 @@ export function MatterMessages({ data, matterId }: { data: WorkspaceData; matter
         }}
       >
         <div className={s.field}>
-          <label htmlFor="message">Your message</label>
+          <label htmlFor="message"> {translate('matters.yourMessage')} </label>
           <textarea
             id="message"
             value={text}
@@ -83,21 +88,26 @@ export function MatterMessages({ data, matterId }: { data: WorkspaceData; matter
               setSent(false);
             }}
             maxLength={2000}
-            placeholder="Write an update for everyone on this matter…"
+            placeholder={translate('matters.writeAnUpdateForEveryoneOnThis')}
             aria-invalid={!!validation}
             aria-describedby="message-error"
           />
         </div>
         <span id="message-error" role="alert" className={s.error}>
-          {validation || (mutation.error ? errorMessage(mutation.error) : '')}
+          {validation
+            ? translate(`validation.${validationCode(validation)}`)
+            : mutation.error
+              ? errorMessage(mutation.error)
+              : ''}
         </span>
         <button className={s.button} disabled={mutation.isPending}>
           <Send size={14} />
-          {mutation.isPending ? 'Sending…' : 'Send message'}
+          {mutation.isPending ? translate('matters.sending') : translate('matters.sendMessage')}
         </button>
         {sent && (
           <span role="status" className={s.success}>
-            Message added to the demo conversation.
+            {' '}
+            {translate('matters.messageAddedToTheDemoConversation')}{' '}
           </span>
         )}
       </form>

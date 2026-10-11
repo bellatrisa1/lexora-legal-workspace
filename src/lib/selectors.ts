@@ -9,5 +9,5 @@ export function upcoming(data: WorkspaceData, today: string, days = 14) {
     .toSorted((a, b) => a.targetDate.localeCompare(b.targetDate));
 }
 export function matterName(data: WorkspaceData, id: string) {
-  return data.matters.find((m) => m.id === id)?.title ?? 'Matter unavailable';
+  return data.matters.find((m) => m.id === id)?.title ?? id;
 }

@@ -1,13 +1,19 @@
 'use client';
+import { useT } from '@/i18n/provider';
+
 import { useState } from 'react';
 import Link from 'next/link';
 import { CalendarDays } from 'lucide-react';
 import { useWorkspace, useFormat } from '@/lib/queries';
-import { errorMessage } from '@/lib/presentation';
+import { usePresentation } from '@/lib/presentation';
 import { matterName } from '@/lib/selectors';
 import { Loading, ErrorState, PageHeading, PriorityBadge, Empty } from '../common';
 import s from '../ui.module.scss';
 export function CalendarPage() {
+  const { errorMessage } = usePresentation();
+
+  const translate = useT();
+
   const query = useWorkspace();
   const format = useFormat();
   const [range, setRange] = useState('30');
@@ -27,7 +33,7 @@ export function CalendarPage() {
         matterId: m.id,
         title: m.title,
         date: m.targetDate,
-        kind: 'Matter target date',
+        kind: translate('calendar.matterTargetDate'),
         priority: m.priority,
         tab: 'overview',
       })),
@@ -38,7 +44,7 @@ export function CalendarPage() {
         matterId: t.matterId,
         title: t.title,
         date: t.dueDate,
-        kind: 'Task deadline',
+        kind: translate('calendar.taskDeadline'),
         priority: t.priority,
         tab: 'tasks',
       })),
@@ -49,18 +55,18 @@ export function CalendarPage() {
   return (
     <>
       <PageHeading
-        title="Calendar"
-        description="Matter target dates and task deadlines in one working agenda."
+        title={translate('navigation.calendar')}
+        description={translate('calendar.matterTargetDatesAndTaskDeadlinesIn')}
       >
         <select
           className={s.select}
-          aria-label="Calendar range"
+          aria-label={translate('calendar.calendarRange')}
           value={range}
           onChange={(e) => setRange(e.target.value)}
         >
-          <option value="14">Next 14 days + overdue</option>
-          <option value="30">Next 30 days + overdue</option>
-          <option value="all">All scheduled work</option>
+          <option value="14"> {translate('calendar.next14DaysOverdue')} </option>
+          <option value="30"> {translate('calendar.next30DaysOverdue')} </option>
+          <option value="all"> {translate('calendar.allScheduledWork')} </option>
         </select>
       </PageHeading>
       <div className={s.stack}>
@@ -71,7 +77,9 @@ export function CalendarPage() {
                 <h2>
                   <CalendarDays size={14} /> {format.date(date)}
                 </h2>
-                {date < today && <span className={s.error}>Past target date</span>}
+                {date < today && (
+                  <span className={s.error}> {translate('calendar.pastTargetDate')} </span>
+                )}
               </div>
               <ul className={s.list}>
                 {events
@@ -100,8 +108,8 @@ export function CalendarPage() {
         ) : (
           <div className={s.panel}>
             <Empty
-              title="Nothing scheduled in this range"
-              text="Choose a wider date range to see future work."
+              title={translate('calendar.nothingScheduledInThisRange')}
+              text={translate('calendar.chooseAWiderDateRangeToSee')}
             />
           </div>
         )}

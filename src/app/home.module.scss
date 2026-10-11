@@ -563,3 +563,9 @@
     display: none;
   }
 }
+
+@media (max-width: 480px) {
+  .headerAction {
+    display: none;
+  }
+}

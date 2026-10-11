@@ -1,45 +1,55 @@
+'use client';
+import { useFormat } from '@/lib/queries';
+import { useT } from '@/i18n/provider';
+import { LanguageSwitcher } from '@/components/language-switcher';
 import Link from 'next/link';
 import { ArrowRight, ArrowUpRight, Layers3, Globe2, MessageSquare, Check } from 'lucide-react';
 import s from './home.module.scss';
 
-const capabilities = [
-  {
-    number: '01',
-    icon: Layers3,
-    title: 'Every matter. One clear picture.',
-    text: 'Bring clients, documents, tasks and decisions together around the work. Know who owns the next step and what needs attention.',
-  },
-  {
-    number: '02',
-    icon: Globe2,
-    title: 'Built around a global perspective.',
-    text: 'Keep jurisdiction, organization and team context visible. Structure cross-border work without treating one legal system as the default.',
-  },
-  {
-    number: '03',
-    icon: MessageSquare,
-    title: 'Keep the conversation connected.',
-    text: 'Give each matter a shared conversation and an activity timeline. Help legal teams and clients follow the same thread.',
-  },
-];
-
 export default function Home() {
+  const translate = useT();
+  const format = useFormat();
+
+  const capabilities = [
+    {
+      number: '01',
+      icon: Layers3,
+      title: translate('home.everyMatterOneClearPicture'),
+      text: translate('home.bringClientsDocumentsTasksAndDecisionsTogether'),
+    },
+    {
+      number: '02',
+      icon: Globe2,
+      title: translate('home.builtAroundAGlobalPerspective'),
+      text: translate('home.keepJurisdictionOrganizationAndTeamContextVisible'),
+    },
+    {
+      number: '03',
+      icon: MessageSquare,
+      title: translate('home.keepTheConversationConnected'),
+      text: translate('home.giveEachMatterASharedConversationAnd'),
+    },
+  ];
+
   return (
     <div className={s.site}>
       <a className={s.skip} href="#main">
-        Skip to content
+        {' '}
+        {translate('navigation.skipToContent')}{' '}
       </a>
       <header className={s.header}>
-        <Link href="/" className={s.logo} aria-label="Lexora home">
+        <Link href="/" className={s.logo} aria-label={translate('navigation.lexoraHome')}>
           <span className={s.mark} aria-hidden="true" />
           lexora<span className={s.logoDot}>.</span>
         </Link>
-        <nav aria-label="Public navigation">
-          <a href="#platform">Platform</a>
-          <a href="#about">About Lexora</a>
+        <nav aria-label={translate('home.publicNavigation')}>
+          <a href="#platform"> {translate('home.platform')} </a>
+          <a href="#about"> {translate('navigation.aboutLexora')} </a>
           <Link href="/overview" className={s.headerAction}>
-            Explore workspace <ArrowUpRight size={15} />
+            {' '}
+            {translate('home.exploreWorkspace')} <ArrowUpRight size={15} />
           </Link>
+          <LanguageSwitcher />
         </nav>
       </header>
       <main id="main">
@@ -49,95 +59,96 @@ export default function Home() {
               <span /> GLOBAL LEGAL WORKSPACE
             </p>
             <h1>
-              Clarity for legal work.
-              <br />
-              <span>Across every border.</span>
+              {' '}
+              {translate('home.clarityForLegalWork')} <br />
+              <span> {translate('home.acrossEveryBorder')} </span>
             </h1>
-            <p className={s.intro}>
-              A connected workspace for law firms, in-house legal teams and their clients. Bring the
-              details together. Keep the bigger picture in view.
-            </p>
+            <p className={s.intro}> {translate('home.aConnectedWorkspaceForLawFirmsInhouse')} </p>
             <div className={s.actions}>
               <Link href="/overview" className={s.primary}>
-                Explore the demo <ArrowRight size={17} />
+                {' '}
+                {translate('home.exploreTheDemo')} <ArrowRight size={17} />
               </Link>
               <a href="#platform" className={s.textLink}>
-                Discover the platform <ArrowDown />
+                {' '}
+                {translate('home.discoverThePlatform')} <ArrowDown />
               </a>
             </div>
             <p className={s.demoNote}>
-              Interactive frontend preview · Fictional workspace · No sign-up
+              {' '}
+              {translate('home.interactivePreviewFictionalWorkspaceNoSignup')}{' '}
             </p>
           </div>
-          <div className={s.preview} aria-label="Illustrative matter workspace preview">
+          <div
+            className={s.preview}
+            aria-label={translate('home.illustrativeMatterWorkspacePreview')}
+          >
             <div className={s.previewTop}>
               <span className={s.miniMark}>L</span>
               <strong>Meridian Legal</strong>
-              <span className={s.previewLabel}>DEMO WORKSPACE</span>
+              <span className={s.previewLabel}> {translate('home.demoWorkspace')} </span>
             </div>
             <div className={s.previewBody}>
-              <p className={s.eyebrow}>MATTER / LEX-1048</p>
+              <p className={s.eyebrow}> {translate('home.matterLex1048')} </p>
               <h2>Northstar Acquisition</h2>
               <p>
-                Asteria Technologies Ltd. <span>·</span> England &amp; Wales
+                Asteria Technologies Ltd. <span>·</span> {translate('home.englandWales')}{' '}
               </p>
               <div className={s.previewStatus}>
-                <span>In Review</span>
-                <small>Corporate / M&amp;A</small>
+                <span> {translate('home.inReview')} </span>
+                <small> {translate('home.corporateMa')} </small>
               </div>
               <div className={s.previewTabs}>
-                <strong>Overview</strong>
-                <span>Documents</span>
-                <span>Activity</span>
+                <strong> {translate('navigation.overview')} </strong>
+                <span> {translate('navigation.documents')} </span>
+                <span> {translate('home.activity')} </span>
               </div>
               <div className={s.previewRow}>
-                <span>Lead counsel</span>
+                <span> {translate('matters.leadCounsel')} </span>
                 <strong>
                   <i>OB</i> Olivia Bennett
                 </strong>
               </div>
               <div className={s.previewRow}>
-                <span>Target date</span>
-                <strong>Oct 14, 2026</strong>
+                <span> {translate('matters.targetDate')} </span>
+                <strong>{format.date('2026-10-14', 'short')}</strong>
               </div>
               <div className={s.nextStep}>
                 <span className={s.stepIcon}>
                   <Check size={16} />
                 </span>
                 <div>
-                  <strong>A clear next step</strong>
-                  <p>Review the transaction documents</p>
+                  <strong> {translate('home.aClearNextStep')} </strong>
+                  <p> {translate('home.reviewTheTransactionDocuments')} </p>
                 </div>
-                <span className={s.priority}>High priority</span>
+                <span className={s.priority}> {translate('home.highPriority')} </span>
               </div>
             </div>
             <div className={s.previewFooter}>
-              <span className={s.liveDot} /> Connected context. Considered decisions.
+              <span className={s.liveDot} />{' '}
+              {translate('home.connectedContextConsideredDecisions')}{' '}
             </div>
           </div>
         </section>
         <div className={s.audiences}>
-          <span>DESIGNED AROUND YOUR TEAM</span>
-          <p>Law firms</p>
+          <span> {translate('home.designedAroundYourTeam')} </span>
+          <p> {translate('home.lawFirms')} </p>
           <i />
-          <p>In-house legal</p>
+          <p> {translate('home.inhouseLegal')} </p>
           <i />
-          <p>Independent counsel</p>
+          <p> {translate('home.independentCounsel')} </p>
           <i />
-          <p>Clients &amp; collaborators</p>
+          <p> {translate('home.clientsCollaborators')} </p>
         </div>
         <section id="platform" className={s.platform}>
           <div className={s.sectionHeading}>
-            <p className={s.eyebrow}>THE PLATFORM</p>
+            <p className={s.eyebrow}> {translate('home.thePlatform')} </p>
             <h2>
-              Less fragmentation.
-              <br />
-              More forward motion.
+              {' '}
+              {translate('home.lessFragmentation')} <br />{' '}
+              {translate('home.moreForwardMotion')}{' '}
             </h2>
-            <p>
-              Legal work is complex enough. The workspace around it should make the next decision
-              easier.
-            </p>
+            <p> {translate('home.legalWorkIsComplexEnoughTheWorkspace')} </p>
           </div>
           <div className={s.features}>
             {capabilities.map(({ number, icon: Icon, title, text }) => (
@@ -154,46 +165,38 @@ export default function Home() {
         </section>
         <section id="about" className={s.about}>
           <div>
-            <p className={s.eyebrow}>ABOUT LEXORA</p>
+            <p className={s.eyebrow}> {translate('home.aboutLexora')} </p>
             <h2>
-              Legal expertise is human.
-              <br />
-              The workspace should
-              <br />
-              work with it.
+              {' '}
+              {translate('home.legalExpertiseIsHuman')} <br />{' '}
+              {translate('home.theWorkspaceShould')} <br /> {translate('home.workWithIt')}{' '}
             </h2>
           </div>
           <div className={s.aboutCopy}>
-            <p>
-              Lexora is a legal technology product built around a simple belief: clear context helps
-              people do better work.
-            </p>
-            <p>
-              Our direction is a shared workspace that respects how legal teams operate—across
-              organizations, jurisdictions and time zones. Matters sit at its center, connecting the
-              people, documents and decisions behind each engagement.
-            </p>
+            <p> {translate('home.lexoraIsALegalTechnologyProductBuilt')} </p>
+            <p> {translate('home.ourDirectionIsASharedWorkspaceThat')} </p>
             <p className={s.disclosure}>
-              Lexora is currently a portfolio product in active development. This preview
-              demonstrates the frontend experience; it is not a live legal service or a production
-              platform.
+              {' '}
+              {translate('home.lexoraIsCurrentlyAPortfolioProductIn')}{' '}
             </p>
             <Link href="/help" className={s.textLink}>
-              What you can explore today <ArrowUpRight size={16} />
+              {' '}
+              {translate('home.whatYouCanExploreToday')} <ArrowUpRight size={16} />
             </Link>
           </div>
         </section>
         <section className={s.cta}>
-          <p className={s.eyebrow}>SEE THE WORKSPACE IN ACTION</p>
+          <p className={s.eyebrow}> {translate('home.seeTheWorkspaceInAction')} </p>
           <h2>
-            A more connected way
-            <br />
-            to move legal work forward.
+            {' '}
+            {translate('home.aMoreConnectedWay')} <br />{' '}
+            {translate('home.toMoveLegalWorkForward')}{' '}
           </h2>
           <Link href="/overview" className={s.primary}>
-            Enter the demo workspace <ArrowRight size={17} />
+            {' '}
+            {translate('home.enterTheDemoWorkspace')} <ArrowRight size={17} />
           </Link>
-          <p>Explore matters, clients, documents and tasks.</p>
+          <p> {translate('home.exploreMattersClientsDocumentsAndTasks')} </p>
         </section>
       </main>
       <footer className={s.footer}>
@@ -205,13 +208,14 @@ export default function Home() {
           <p>Global Legal Workspace</p>
         </div>
         <div>
-          <a href="#about">About</a>
-          <Link href="/help">Demo guide</Link>
+          <a href="#about"> {translate('home.about')} </a>
+          <Link href="/help"> {translate('home.demoGuide')} </Link>
           <Link href="/overview">
-            Workspace <ArrowUpRight size={13} />
+            {' '}
+            {translate('navigation.workspace')} <ArrowUpRight size={13} />
           </Link>
         </div>
-        <small>Frontend prototype. All workspace records are fictional.</small>
+        <small> {translate('home.developmentPreviewAllWorkspaceRecordsAreFictional')} </small>
       </footer>
     </div>
   );

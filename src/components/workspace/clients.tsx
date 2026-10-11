@@ -1,14 +1,20 @@
 'use client';
+import { useT } from '@/i18n/provider';
+
 import Link from 'next/link';
 import { useState } from 'react';
 import { Search, ArrowLeft, ArrowUpRight } from 'lucide-react';
 import { useWorkspace, useFormat } from '@/lib/queries';
-import { errorMessage } from '@/lib/presentation';
+import { usePresentation } from '@/lib/presentation';
 import { isActive } from '@/lib/selectors';
 import { Loading, ErrorState, PageHeading, Empty } from '../common';
 import { MatterTable } from '../matters/matter-table';
 import s from '../ui.module.scss';
 export function ClientsPage() {
+  const { errorMessage } = usePresentation();
+
+  const translate = useT();
+
   const query = useWorkspace();
   const [search, setSearch] = useState('');
   const format = useFormat();
@@ -22,20 +28,20 @@ export function ClientsPage() {
   return (
     <>
       <PageHeading
-        title="Clients"
-        description="The people and organizations behind your legal work."
+        title={translate('navigation.clients')}
+        description={translate('clients.thePeopleAndOrganizationsBehindYourLegal')}
       />
       <div className={s.toolbar} style={{ padding: '0 0 22px', border: 0 }}>
         <label className={s.search}>
           <Search size={15} />
           <input
-            aria-label="Search clients"
-            placeholder="Search clients, countries or contacts…"
+            aria-label={translate('clients.searchClients')}
+            placeholder={translate('clients.searchClientsCountriesOrContacts')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </label>
-        <span className={s.small}>{clients.length} clients</span>
+        <span className={s.small}>{translate('clients.count', { count: clients.length })}</span>
       </div>
       {clients.length ? (
         <div className={s.grid}>
@@ -49,7 +55,9 @@ export function ClientsPage() {
                   <div className={s.row}>
                     <span className={s.clientMark}>{client.initials}</span>
                     <span className={s.small}>
-                      {client.kind === 'individual' ? 'Individual' : 'Organization'}
+                      {client.kind === 'individual'
+                        ? translate('clients.individual')
+                        : translate('matters.organization')}
                     </span>
                   </div>
                   <h2 style={{ marginTop: 20 }}>
@@ -61,20 +69,25 @@ export function ClientsPage() {
                   <hr className={s.divider} />
                   <dl className={s.definition}>
                     <div>
-                      <dt>Primary contact</dt>
+                      <dt> {translate('clients.primaryContact')} </dt>
                       <dd>{client.contact}</dd>
                     </div>
                     <div>
-                      <dt>Active matters</dt>
+                      <dt> {translate('matters.activeMatters')} </dt>
                       <dd>{related.filter(isActive).length}</dd>
                     </div>
                     <div>
-                      <dt>Latest matter update</dt>
-                      <dd>{updated ? format.date(updated, 'short') : 'No activity yet'}</dd>
+                      <dt> {translate('clients.latestMatterUpdate')} </dt>
+                      <dd>
+                        {updated
+                          ? format.date(updated, 'short')
+                          : translate('activityfeed.noActivityYet')}
+                      </dd>
                     </div>
                   </dl>
                   <Link className={s.link} style={{ marginTop: 22 }} href={`/clients/${client.id}`}>
-                    View client <ArrowUpRight size={13} />
+                    {' '}
+                    {translate('clients.viewClient')} <ArrowUpRight size={13} />
                   </Link>
                 </div>
               </article>
@@ -82,12 +95,19 @@ export function ClientsPage() {
           })}
         </div>
       ) : (
-        <Empty title="No clients found" text="Try a different client name, country or contact." />
+        <Empty
+          title={translate('clients.noClientsFound')}
+          text={translate('clients.tryADifferentClientNameCountryOr')}
+        />
       )}
     </>
   );
 }
 export function ClientDetail({ id }: { id: string }) {
+  const { errorMessage } = usePresentation();
+
+  const translate = useT();
+
   const query = useWorkspace();
   const format = useFormat();
   if (query.isPending) return <Loading />;
@@ -98,21 +118,20 @@ export function ClientDetail({ id }: { id: string }) {
   if (!client)
     return (
       <Empty
-        title="Client not found"
-        text="This client is not available in your current demo workspace."
+        title={translate('clients.clientNotFound')}
+        text={translate('clients.thisClientIsNotAvailableInYour')}
       />
     );
   return (
     <>
       <Link href="/clients" className={s.back}>
-        <ArrowLeft size={13} />
-        All clients
+        <ArrowLeft size={13} /> {translate('clients.allClients')}{' '}
       </Link>
       <PageHeading title={client.name} description={`${client.industry} · ${client.country}`} />
       <div className={s.twoColumns}>
         <section className={s.panel}>
           <div className={s.panelHeader}>
-            <h2>Client matters</h2>
+            <h2> {translate('clients.clientMatters')} </h2>
           </div>
           <MatterTable
             matters={data.matters.filter((m) => m.clientId === id)}
@@ -122,30 +141,34 @@ export function ClientDetail({ id }: { id: string }) {
         </section>
         <aside className={s.panel}>
           <div className={s.body}>
-            <h2>Client profile</h2>
+            <h2> {translate('clients.clientProfile')} </h2>
             <dl className={s.definition}>
               <div>
-                <dt>Client type</dt>
-                <dd>{client.kind === 'individual' ? 'Individual' : 'Organization'}</dd>
+                <dt> {translate('clients.clientType')} </dt>
+                <dd>
+                  {client.kind === 'individual'
+                    ? translate('clients.individual')
+                    : translate('matters.organization')}
+                </dd>
               </div>
               <div>
-                <dt>Primary contact</dt>
+                <dt> {translate('clients.primaryContact')} </dt>
                 <dd>{client.contact}</dd>
               </div>
               <div>
-                <dt>Email</dt>
+                <dt> {translate('clients.email')} </dt>
                 <dd>{client.email}</dd>
               </div>
               <div>
-                <dt>Country</dt>
+                <dt> {translate('clients.country')} </dt>
                 <dd>{client.country}</dd>
               </div>
               <div>
-                <dt>Client since</dt>
+                <dt> {translate('clients.clientSince')} </dt>
                 <dd>{format.date(client.since)}</dd>
               </div>
               <div>
-                <dt>Workspace</dt>
+                <dt> {translate('navigation.workspace')} </dt>
                 <dd>{data.organization.name}</dd>
               </div>
             </dl>

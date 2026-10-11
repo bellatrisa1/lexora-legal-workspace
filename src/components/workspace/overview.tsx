@@ -1,4 +1,6 @@
 'use client';
+import { useT } from '@/i18n/provider';
+
 import Link from 'next/link';
 import {
   BriefcaseBusiness,
@@ -10,7 +12,7 @@ import {
   Circle,
 } from 'lucide-react';
 import { useWorkspace, useFormat } from '@/lib/queries';
-import { errorMessage } from '@/lib/presentation';
+import { usePresentation } from '@/lib/presentation';
 import { isActive, upcoming, matterName } from '@/lib/selectors';
 import { Loading, ErrorState, PageHeading, Empty, PriorityBadge } from '../common';
 import { MatterTable } from '../matters/matter-table';
@@ -18,6 +20,10 @@ import { ActivityFeed } from './activity-feed';
 import s from '../ui.module.scss';
 import o from './overview.module.scss';
 export function Overview() {
+  const { errorMessage } = usePresentation();
+
+  const translate = useT();
+
   const query = useWorkspace();
   const format = useFormat();
   if (query.isPending) return <Loading />;
@@ -34,30 +40,30 @@ export function Overview() {
     .slice(0, 5);
   const metrics = [
     {
-      label: 'Active matters',
+      label: translate('matters.activeMatters'),
       value: data.matters.filter(isActive).length,
-      detail: 'Across your workspace',
+      detail: translate('overview.acrossYourWorkspace'),
       icon: BriefcaseBusiness,
       href: '/matters?status=active',
     },
     {
-      label: 'Awaiting review',
+      label: translate('overview.awaitingReview'),
       value: data.matters.filter((m) => m.status === 'in_review').length,
-      detail: 'Ready for your next step',
+      detail: translate('overview.readyForYourNextStep'),
       icon: CircleCheck,
       href: '/matters?status=in_review',
     },
     {
-      label: 'Upcoming deadlines',
+      label: translate('overview.upcomingDeadlines'),
       value: deadlines.length,
-      detail: 'In the next 14 days',
+      detail: translate('overview.inTheNext14Days'),
       icon: Clock3,
       href: '/calendar',
     },
     {
-      label: 'Client action required',
+      label: translate('overview.clientActionRequired'),
       value: data.matters.filter((m) => m.status === 'client_action').length,
-      detail: 'Keep the conversation moving',
+      detail: translate('overview.keepTheConversationMoving'),
       icon: MessageSquare,
       href: '/matters?status=client_action',
     },
@@ -65,8 +71,8 @@ export function Overview() {
   return (
     <>
       <PageHeading
-        title={`Good to see you, ${data.currentUser.name.split(' ')[0]}`}
-        description="Your matters, people and priorities. All in one place."
+        title={translate('overview.greeting', { name: data.currentUser.name.split(' ')[0] })}
+        description={translate('overview.yourMattersPeopleAndPrioritiesAllIn')}
       >
         <span className={o.dateNow}>
           <CalendarDays size={14} />
@@ -90,20 +96,21 @@ export function Overview() {
       <div className={o.mainGrid}>
         <section className={s.panel}>
           <div className={s.panelHeader}>
-            <h2>Recent matters</h2>
+            <h2> {translate('overview.recentMatters')} </h2>
             <Link href="/matters" className={s.link}>
-              View all matters <ArrowUpRight size={13} />
+              {' '}
+              {translate('overview.viewAllMatters')} <ArrowUpRight size={13} />
             </Link>
           </div>
           <MatterTable matters={recent} data={data} compact />
           <div className={s.tableFooter}>
-            <span>Showing the latest {recent.length} matters</span>
-            <span>Updated across your team</span>
+            <span> {translate('overview.recentCount', { count: recent.length })}</span>
+            <span> {translate('overview.updatedAcrossYourTeam')} </span>
           </div>
         </section>
         <section className={s.panel}>
           <div className={s.panelHeader}>
-            <h2>Upcoming deadlines</h2>
+            <h2> {translate('overview.upcomingDeadlines')} </h2>
             <CalendarDays size={15} color="#9298a5" />
           </div>
           {deadlines.length ? (
@@ -112,12 +119,8 @@ export function Overview() {
                 <li key={m.id}>
                   <div className={o.deadline}>
                     <div className={o.dateBox}>
-                      <small>
-                        {new Intl.DateTimeFormat('en', { month: 'short', timeZone: 'UTC' }).format(
-                          new Date(m.targetDate),
-                        )}
-                      </small>
-                      <strong>{new Date(m.targetDate).getUTCDate()}</strong>
+                      <small>{format.month(m.targetDate)}</small>
+                      <strong>{format.day(m.targetDate)}</strong>
                     </div>
                     <div>
                       <Link className={s.listTitle} href={`/matters/${m.id}`}>
@@ -135,11 +138,15 @@ export function Overview() {
               ))}
             </ul>
           ) : (
-            <Empty title="A clear schedule" text="No matter deadlines in the next 14 days." />
+            <Empty
+              title={translate('overview.aClearSchedule')}
+              text={translate('overview.noMatterDeadlinesInTheNext14')}
+            />
           )}
           <div className={o.bottomNote}>
             <Link href="/calendar" className={s.link}>
-              Open calendar <ArrowUpRight size={13} />
+              {' '}
+              {translate('overview.openCalendar')} <ArrowUpRight size={13} />
             </Link>
           </div>
         </section>
@@ -148,10 +155,13 @@ export function Overview() {
         <section className={s.panel}>
           <div className={s.panelHeader}>
             <h2>
-              Tasks requiring attention <span className={s.small}> / {pending.length}</span>
+              {' '}
+              {translate('overview.tasksRequiringAttention')}{' '}
+              <span className={s.small}> / {pending.length}</span>
             </h2>
             <Link href="/tasks" className={s.link}>
-              View tasks <ArrowUpRight size={13} />
+              {' '}
+              {translate('overview.viewTasks')} <ArrowUpRight size={13} />
             </Link>
           </div>
           {pending.length ? (
@@ -174,13 +184,16 @@ export function Overview() {
               ))}
             </ul>
           ) : (
-            <Empty title="All caught up" text="There are no outstanding tasks." />
+            <Empty
+              title={translate('overview.allCaughtUp')}
+              text={translate('overview.thereAreNoOutstandingTasks')}
+            />
           )}
         </section>
         <section className={s.panel}>
           <div className={s.panelHeader}>
-            <h2>Recent activity</h2>
-            <span className={s.small}>Across your workspace</span>
+            <h2> {translate('matters.recentActivity')} </h2>
+            <span className={s.small}> {translate('overview.acrossYourWorkspace')} </span>
           </div>
           <ActivityFeed data={data} limit={3} />
         </section>

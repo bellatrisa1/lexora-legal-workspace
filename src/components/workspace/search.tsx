@@ -1,10 +1,16 @@
 'use client';
+import { useT } from '@/i18n/provider';
+
 import Link from 'next/link';
 import { useWorkspace } from '@/lib/queries';
-import { errorMessage } from '@/lib/presentation';
+import { usePresentation } from '@/lib/presentation';
 import { Loading, ErrorState, PageHeading, Empty } from '../common';
 import s from '../ui.module.scss';
 export function SearchPage({ query: term }: { query: string }) {
+  const { errorMessage } = usePresentation();
+
+  const translate = useT();
+
   const query = useWorkspace();
   if (query.isPending) return <Loading />;
   if (query.error)
@@ -18,7 +24,7 @@ export function SearchPage({ query: term }: { query: string }) {
           .map((m) => ({
             id: `m-${m.id}`,
             name: m.title,
-            type: 'Matter',
+            type: translate('search.matter'),
             href: `/matters/${m.id}`,
           })),
         ...data.clients
@@ -26,7 +32,7 @@ export function SearchPage({ query: term }: { query: string }) {
           .map((c) => ({
             id: `c-${c.id}`,
             name: c.name,
-            type: 'Client',
+            type: translate('matters.client'),
             href: `/clients/${c.id}`,
           })),
         ...data.documents
@@ -34,7 +40,7 @@ export function SearchPage({ query: term }: { query: string }) {
           .map((d) => ({
             id: `d-${d.id}`,
             name: d.name,
-            type: 'Document',
+            type: translate('documents.document'),
             href: `/matters/${d.matterId}?tab=documents`,
           })),
       ]
@@ -42,11 +48,11 @@ export function SearchPage({ query: term }: { query: string }) {
   return (
     <>
       <PageHeading
-        title="Search workspace"
+        title={translate('search.searchWorkspace')}
         description={
           term
-            ? `Results for “${term}”`
-            : 'Find matters, clients and documents from the search bar.'
+            ? translate('search.resultsFor', { term })
+            : translate('search.findMattersClientsAndDocumentsFromThe')
         }
       />
       <section className={s.panel}>
@@ -63,8 +69,8 @@ export function SearchPage({ query: term }: { query: string }) {
           </ul>
         ) : (
           <Empty
-            title="No matching results"
-            text="Try a matter name, a client or a document title."
+            title={translate('search.noMatchingResults')}
+            text={translate('search.tryAMatterNameAClientOr')}
           />
         )}
       </section>

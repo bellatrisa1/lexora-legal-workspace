@@ -3,6 +3,10 @@ import type { Locale } from './config';
 export const displayTimeZone = 'UTC';
 export function createFormatters(locale: Locale, timeZone = displayTimeZone) {
   return {
+    month: (value: string) =>
+      new Intl.DateTimeFormat(locale, { month: 'short', timeZone: 'UTC' }).format(new Date(value)),
+    day: (value: string) =>
+      new Intl.DateTimeFormat(locale, { day: 'numeric', timeZone: 'UTC' }).format(new Date(value)),
     date: (value: string | Date, style: 'long' | 'short' = 'long') =>
       new Intl.DateTimeFormat(locale, {
         year: 'numeric',

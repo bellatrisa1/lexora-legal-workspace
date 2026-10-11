@@ -1,9 +1,15 @@
 'use client';
+import { useT } from '@/i18n/provider';
+
 import { useWorkspace } from '@/lib/queries';
-import { errorMessage } from '@/lib/presentation';
+import { usePresentation } from '@/lib/presentation';
 import { Loading, ErrorState, PageHeading, Avatar } from '../common';
 import s from '../ui.module.scss';
 export function TeamPage() {
+  const { errorMessage } = usePresentation();
+
+  const translate = useT();
+
   const query = useWorkspace();
   if (query.isPending) return <Loading />;
   if (query.error)
@@ -12,8 +18,8 @@ export function TeamPage() {
   return (
     <>
       <PageHeading
-        title="Legal team"
-        description={`The people working together at ${data.organization.name}.`}
+        title={translate('matters.legalTeam')}
+        description={translate('team.description', { name: data.organization.name })}
       />
       <div className={s.grid}>
         {data.users
@@ -27,15 +33,15 @@ export function TeamPage() {
                 <hr className={s.divider} />
                 <dl className={s.definition}>
                   <div>
-                    <dt>Contact</dt>
+                    <dt> {translate('team.contact')} </dt>
                     <dd>{user.email}</dd>
                   </div>
                   <div>
-                    <dt>Timezone</dt>
+                    <dt> {translate('team.timezone')} </dt>
                     <dd>{user.timeZone}</dd>
                   </div>
                   <div>
-                    <dt>Active matters in your view</dt>
+                    <dt> {translate('team.activeMattersInYourView')} </dt>
                     <dd>
                       {
                         data.matters.filter(

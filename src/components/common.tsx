@@ -1,9 +1,13 @@
 'use client';
+import { useT } from '@/i18n/provider';
+
 import { CircleAlert, FolderOpen, ArrowUpRight, Minus } from 'lucide-react';
 import type { MatterStatus, Priority } from '@/lib/domain';
-import { statusLabels, priorityLabels } from '@/lib/presentation';
+import { usePresentation } from '@/lib/presentation';
 import s from './ui.module.scss';
 export function Badge({ status, label }: { status: string; label?: string }) {
+  const { statusLabels } = usePresentation();
+
   return (
     <span className={`${s.badge} ${s[status] ?? ''}`}>
       {label ?? statusLabels[status as MatterStatus] ?? status}
@@ -11,6 +15,8 @@ export function Badge({ status, label }: { status: string; label?: string }) {
   );
 }
 export function PriorityBadge({ priority }: { priority: Priority }) {
+  const { priorityLabels } = usePresentation();
+
   return (
     <span className={`${s.priority} ${s[priority] ?? ''}`}>
       {priority === 'high' ? <ArrowUpRight size={13} /> : <Minus size={12} />}{' '}
@@ -31,24 +37,29 @@ export function Avatar({ name, initials }: { name: string; initials?: string }) 
   );
 }
 export function Loading() {
+  const translate = useT();
+
   return (
-    <div role="status" aria-label="Loading workspace" className={s.skeleton}>
+    <div role="status" aria-label={translate('common.loadingWorkspace')} className={s.skeleton}>
       <div />
       <div />
       <div />
-      <span className={s.srOnly}>Loading workspace…</span>
+      <span className={s.srOnly}> {translate('common.loadingWorkspace2')} </span>
     </div>
   );
 }
 export function ErrorState({ message, retry }: { message: string; retry?: () => void }) {
+  const translate = useT();
+
   return (
     <div className={`${s.panel} ${s.empty}`} role="alert">
       <CircleAlert size={28} />
-      <h2>Unable to load this workspace</h2>
+      <h2> {translate('common.unableToLoadThisWorkspace')} </h2>
       <p>{message}</p>
       {retry && (
         <button className={s.secondary} onClick={retry}>
-          Try again
+          {' '}
+          {translate('common.tryAgain')}{' '}
         </button>
       )}
     </div>

@@ -1,4 +1,6 @@
 'use client';
+import { useT } from '@/i18n/provider';
+
 import { useState } from 'react';
 import Link from 'next/link';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -6,15 +8,19 @@ import type { TaskStatus, WorkspaceData } from '@/lib/domain';
 import { taskStatuses } from '@/lib/domain';
 import { capabilities } from '@/lib/policy';
 import { api } from '@/lib/api';
-import { errorMessage, taskLabels } from '@/lib/presentation';
+import { usePresentation } from '@/lib/presentation';
 import { matterName } from '@/lib/selectors';
 import { useWorkspace, useFormat } from '@/lib/queries';
 import { useWorkspaceContext } from '../providers';
 import { Avatar, Badge, PriorityBadge, Empty, ErrorState, Loading, PageHeading } from '../common';
 import s from '../ui.module.scss';
 export function TaskList({ data, matterId }: { data: WorkspaceData; matterId?: string }) {
+  const { errorMessage, taskLabels } = usePresentation();
+
+  const translate = useT();
+
   const [filter, setFilter] = useState('active');
-  const [success, setSuccess] = useState('');
+  const [success, setSuccess] = useState(false);
   const { session } = useWorkspaceContext();
   const cache = useQueryClient();
   const format = useFormat();
@@ -22,7 +28,7 @@ export function TaskList({ data, matterId }: { data: WorkspaceData; matterId?: s
     mutationFn: ({ id, status }: { id: string; status: TaskStatus }) =>
       api.updateTask(session, id, status),
     onSuccess: async () => {
-      setSuccess('Task updated.');
+      setSuccess(true);
       await cache.invalidateQueries({ queryKey: ['workspace'] });
     },
   });
@@ -40,12 +46,12 @@ export function TaskList({ data, matterId }: { data: WorkspaceData; matterId?: s
       <div className={s.toolbar}>
         <select
           className={s.select}
-          aria-label="Task filter"
+          aria-label={translate('tasks.taskFilter')}
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
         >
-          <option value="active">Open tasks</option>
-          <option value="all">All tasks</option>
+          <option value="active"> {translate('tasks.openTasks')} </option>
+          <option value="all"> {translate('tasks.allTasks')} </option>
           {taskStatuses.map((status) => (
             <option key={status} value={status}>
               {taskLabels[status]}
@@ -53,7 +59,9 @@ export function TaskList({ data, matterId }: { data: WorkspaceData; matterId?: s
           ))}
         </select>
         <span className={s.small} role="status">
-          {success || `${tasks.length} tasks`}
+          {success
+            ? translate('tasks.taskUpdated')
+            : translate('tasks.count', { count: tasks.length })}
         </span>
         {mutation.error && (
           <span className={s.error} role="alert">
@@ -66,11 +74,11 @@ export function TaskList({ data, matterId }: { data: WorkspaceData; matterId?: s
           <table className={s.table}>
             <thead>
               <tr>
-                <th>Task / Matter</th>
-                <th>Assignee</th>
-                <th>Due date</th>
-                <th>Priority</th>
-                <th>Status</th>
+                <th> {translate('tasks.taskMatter')} </th>
+                <th> {translate('tasks.assignee')} </th>
+                <th> {translate('tasks.dueDate')} </th>
+                <th> {translate('matters.priority')} </th>
+                <th> {translate('matters.status')} </th>
               </tr>
             </thead>
             <tbody>
@@ -86,21 +94,23 @@ export function TaskList({ data, matterId }: { data: WorkspaceData; matterId?: s
                         </Link>
                       </small>
                     </td>
-                    <td data-label="Assignee">
+                    <td data-label={translate('tasks.assignee')}>
                       <span className={s.person}>
                         {assignee && <Avatar name={assignee.name} />}{' '}
-                        {assignee?.name ?? 'Unassigned'}
+                        {assignee?.name ?? translate('matters.unassigned')}
                       </span>
                     </td>
-                    <td data-label="Due date">{format.date(task.dueDate, 'short')}</td>
-                    <td data-label="Priority">
+                    <td data-label={translate('tasks.dueDate')}>
+                      {format.date(task.dueDate, 'short')}
+                    </td>
+                    <td data-label={translate('matters.priority')}>
                       <PriorityBadge priority={task.priority} />
                     </td>
-                    <td data-label="Status">
+                    <td data-label={translate('matters.status')}>
                       {can.manageTasks ? (
                         <select
                           className={s.select}
-                          aria-label={`Status for ${task.title}`}
+                          aria-label={translate('tasks.statusFor', { title: task.title })}
                           value={task.status}
                           disabled={mutation.isPending}
                           onChange={(e) =>
@@ -125,14 +135,18 @@ export function TaskList({ data, matterId }: { data: WorkspaceData; matterId?: s
         </div>
       ) : (
         <Empty
-          title="No tasks in this view"
-          text="Your team’s work items will appear here. Try selecting all tasks."
+          title={translate('tasks.noTasksInThisView')}
+          text={translate('tasks.yourTeamsWorkItemsWillAppearHere')}
         />
       )}
     </>
   );
 }
 export function TasksPage() {
+  const { errorMessage } = usePresentation();
+
+  const translate = useT();
+
   const query = useWorkspace();
   if (query.isPending) return <Loading />;
   if (query.error)
@@ -140,8 +154,8 @@ export function TasksPage() {
   return (
     <>
       <PageHeading
-        title="Tasks"
-        description="Keep legal work moving, one clear next step at a time."
+        title={translate('navigation.tasks')}
+        description={translate('tasks.keepLegalWorkMovingOneClearNext')}
       />
       <section className={s.panel}>
         <TaskList data={query.data} />

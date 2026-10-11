@@ -1,8 +1,10 @@
 'use client';
+import { useT } from '@/i18n/provider';
+
 import Link from 'next/link';
 import { Activity as ActivityIcon } from 'lucide-react';
 import type { WorkspaceData } from '@/lib/domain';
-import { activityText } from '@/lib/presentation';
+import { usePresentation } from '@/lib/presentation';
 import { useFormat } from '@/lib/queries';
 import { Empty } from '../common';
 import s from '../ui.module.scss';
@@ -15,6 +17,10 @@ export function ActivityFeed({
   matterId?: string;
   limit?: number;
 }) {
+  const { activityText } = usePresentation();
+
+  const translate = useT();
+
   const format = useFormat();
   const events = data.activities
     .filter((a) => !matterId || a.matterId === matterId)
@@ -22,7 +28,10 @@ export function ActivityFeed({
     .slice(0, limit);
   if (!events.length)
     return (
-      <Empty title="No activity yet" text="Matter updates will appear here as work progresses." />
+      <Empty
+        title={translate('activityfeed.noActivityYet')}
+        text={translate('activityfeed.matterUpdatesWillAppearHereAsWork')}
+      />
     );
   return (
     <ul className={s.list}>
@@ -35,7 +44,8 @@ export function ActivityFeed({
             <div>
               <p>
                 <strong>
-                  {data.users.find((u) => u.id === event.actorId)?.name ?? 'Team member'}
+                  {data.users.find((u) => u.id === event.actorId)?.name ??
+                    translate('activityfeed.teamMember')}
                 </strong>{' '}
                 {activityText(event, data)}
               </p>

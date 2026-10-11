@@ -1,4 +1,6 @@
 'use client';
+import { useT } from '@/i18n/provider';
+
 import { useId, useRef } from 'react';
 import { X } from 'lucide-react';
 import s from './ui.module.scss';
@@ -13,6 +15,8 @@ export function Dialog({
   children: React.ReactNode;
   className?: string;
 }) {
+  const translate = useT();
+
   const ref = useRef<HTMLDialogElement>(null);
   const id = useId();
   const close = () => ref.current?.close();
@@ -40,7 +44,11 @@ export function Dialog({
       >
         <div className={s.dialogHead}>
           <h2 id={id}>{title}</h2>
-          <button className={s.iconButton} onClick={close} aria-label="Close dialog">
+          <button
+            className={s.iconButton}
+            onClick={close}
+            aria-label={translate('common.closeDialog')}
+          >
             <X size={17} />
           </button>
         </div>
